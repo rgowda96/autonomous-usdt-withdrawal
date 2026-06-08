@@ -81,3 +81,22 @@ Last completed: **A.01 — demo HTML page at / + idempotent seeding fix (PR #1 m
 - `halt_on_test_failure`: true
 - `merge_method`: squash
 - `pr_target_branch`: claude/blissful-davinci-Jw9jf
+- `human_in_the_loop`: false (loop does not ask, test, or wait for human)
+
+## Cross-platform tick lock
+
+The loop may be running from multiple platforms (Claude Web, Antigravity, GHA cron,
+VPS cron, Cursor/Cline — see CONTINUITY.md). Coordinator prevents double-work.
+
+`tick_holder`:
+- platform: (none)
+- started_at: (none)
+- expires_at: (none)
+
+Before any code work, write self to tick_holder with expires_at = now + 10min and push.
+If a holder exists with expires_at > now AND platform != self: SKIP this tick, log to
+Coordination log below, exit cleanly.
+
+## Coordination log (skipped ticks)
+
+(none)

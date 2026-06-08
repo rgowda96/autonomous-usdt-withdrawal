@@ -79,6 +79,13 @@ Rules for using agents:
 - **Never `--no-verify`, never skip hooks.**
 - **Never auto-resolve review threads humans opened.** If a human commented on the PR while you were working: STOP, convert to draft, escalate to STATE.md > Blocked items.
 
+## Anti-friction discipline
+
+- **Never ask the human to test anything.** CI + code-review skill + security-review skill + Mission Guardian ARE the testing. If those all pass, ship. If they don't, fix or block.
+- **Never wait for human input mid-tick.** If you can't proceed, mark `[B]` and move to next unblocked task.
+- **Never narrate "do you want me to..." style questions.** Just do, log, ship.
+- **Never report "ready for your review."** The Merger agent reviewed and merged. The human reads the squashed commit on the working branch, not your PR description.
+
 ## Hard rules — never violate
 
 - **No real money.** Mock or testnet only. `allow_real_money: false` is permanent.
