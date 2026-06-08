@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
-process.env.DATABASE_URL = "./data/test.db";
+process.env.DATABASE_URL = `./data/test-quote-${process.pid}.db`;
 
 const { db, now } = await import("../src/db/index.js");
 const { createQuote } = await import("../src/services/quote.js");
