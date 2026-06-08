@@ -10,7 +10,7 @@ The first phase is dedicated to **giving the first user (you) something to poke*
 
 ## Phase A — Testable surface FIRST (user can poke after each task)
 - [x] 002.01 Add `GET /v1/quotes/:id` endpoint + test
-- [ ] A.01 Add a single-file demo HTML page at `/` (vanilla JS, no build) — shows: "Scan QR" (paste VPA), amount input, "Get Quote", quote card, "Confirm Pay", success receipt. Hits the live API.
+- [x] A.01 Add a single-file demo HTML page at `/` (vanilla JS, no build) — shows: "Scan QR" (paste VPA), amount input, "Get Quote", quote card, "Confirm Pay", success receipt. Hits the live API.
 - [ ] A.02 Pre-seed demo user on first server boot so the demo page just works
 - [ ] A.03 Add a "Recent transactions" list panel on the demo page
 - [ ] A.04 Add visual loading + error states (failure modes look like the real product)

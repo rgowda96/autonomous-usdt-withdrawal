@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StablePay Demo</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --card: #151922;
+    --border: #232838;
+    --text: #e6e8ee;
+    --muted: #8a92a6;
+    --accent: #4f8cff;
+    --ok: #2ecc71;
+    --warn: #e8b500;
+    --err: #ff5d6c;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, sans-serif; }
+  .wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 24px; font-size: 13px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 12px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+  input { width: 100%; padding: 10px 12px; background: #0b0d12; border: 1px solid var(--border); border-radius: 8px; color: var(--text); font: inherit; }
+  input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button { padding: 10px 14px; border: none; border-radius: 8px; background: var(--accent); color: white; font: inherit; cursor: pointer; }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 0; }
+  .row > button { flex: 0 0 auto; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-family: var(--mono); font-size: 13px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase; }
+  .pill.ok { background: rgba(46,204,113,0.15); color: var(--ok); }
+  .pill.warn { background: rgba(232,181,0,0.15); color: var(--warn); }
+  .pill.err { background: rgba(255,93,108,0.15); color: var(--err); }
+  pre { font: 12px/1.5 var(--mono); background: #0b0d12; border: 1px solid var(--border); border-radius: 8px; padding: 10px; overflow: auto; max-height: 240px; }
+  .empty { color: var(--muted); font-style: italic; font-size: 13px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>StablePay</h1>
+  <p class="sub">v0 demo. Pay any UPI VPA, debit any asset, route picked automatically. Mock off-ramp.</p>
+
+  <div class="card" id="card-scan">
+    <h2>1. Scan a UPI QR (paste VPA)</h2>
+    <label for="vpa">Payee VPA</label>
+    <input id="vpa" type="text" placeholder="swiggy@hdfc" value="swiggy@hdfc" />
+    <label for="amount">Amount (INR)</label>
+    <input id="amount" type="number" min="1" placeholder="500" value="500" />
+    <div style="height: 12px"></div>
+    <div class="row">
+      <button id="btn-quote">Get quote</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="card-quote">
+    <h2>2. Quote</h2>
+    <dl class="kv" id="quote-kv"></dl>
+    <div style="height: 12px"></div>
+    <div class="row">
+      <button id="btn-confirm">Confirm with FaceID (mock)</button>
+      <button id="btn-cancel" class="secondary">Cancel</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="card-result">
+    <h2>3. Result</h2>
+    <div id="status-pill"></div>
+    <div style="height: 12px"></div>
+    <dl class="kv" id="result-kv"></dl>
+    <div style="height: 12px"></div>
+    <div class="row">
+      <button id="btn-restart" class="secondary">Start a new payment</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recent transactions</h2>
+    <div id="tx-list" class="empty">No transactions yet.</div>
+  </div>
+
+  <div class="card">
+    <h2>Debug — raw API responses</h2>
+    <pre id="debug">{}</pre>
+  </div>
+</div>
+
+<script>
+const userId = "user_demo_1";
+const $ = (sel) => document.querySelector(sel);
+const debug = $("#debug");
+let currentQuote = null;
+let currentTx = null;
+
+function uuid() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
+function show(id) { $(id).classList.remove("hidden"); }
+function hide(id) { $(id).classList.add("hidden"); }
+
+function setKv(id, pairs) {
+  const dl = $(id);
+  dl.innerHTML = "";
+  for (const [k, v] of pairs) {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v;
+    dl.append(dt, dd);
+  }
+}
+
+async function api(method, path, body) {
+  const res = await fetch(path, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const json = await res.json();
+  debug.textContent = JSON.stringify({ [method + " " + path]: json }, null, 2);
+  if (!res.ok) throw new Error(json.error || res.statusText);
+  return json;
+}
+
+$("#btn-quote").addEventListener("click", async () => {
+  const vpa = $("#vpa").value.trim();
+  const amount = parseInt($("#amount").value, 10);
+  if (!vpa || !amount) return alert("Need VPA and amount");
+  try {
+    const q = await api("POST", "/v1/quote", {
+      idempotency_key: uuid(),
+      user_id: userId,
+      payee: { type: "vpa", identifier: vpa, display_name: vpa.split("@")[0] },
+      amount_inr: amount,
+      channel: "qr",
+      asset_preference: "auto_cheapest",
+    });
+    currentQuote = q;
+    const expiresIn = Math.max(0, Math.round((q.expires_at - Date.now()) / 1000));
+    setKv("#quote-kv", [
+      ["Payee", vpa],
+      ["Amount", `Rs ${q.amount_inr}`],
+      ["Pay from", `${q.source_asset} (${q.source_chain})`],
+      ["You will spend", `${q.source_amount} ${q.source_asset}`],
+      ["Rate", `Rs ${parseFloat(q.rate_inr_per_unit).toFixed(2)} per ${q.source_asset}`],
+      ["Fee", `${(q.total_fee_bps / 100).toFixed(2)}%`],
+      ["TDS (1%)", `Rs ${q.tds_inr}`],
+      ["Quote expires in", `${expiresIn}s`],
+      ["Quote ID", q.quote_id],
+    ]);
+    show("#card-quote");
+  } catch (e) {
+    alert("Quote failed: " + e.message);
+  }
+});
+
+$("#btn-cancel").addEventListener("click", () => {
+  currentQuote = null;
+  hide("#card-quote");
+});
+
+$("#btn-confirm").addEventListener("click", async () => {
+  if (!currentQuote) return;
+  try {
+    const s = await api("POST", "/v1/settle", {
+      idempotency_key: uuid(),
+      quote_id: currentQuote.quote_id,
+      auth_proof: "demo-passkey-assertion-" + uuid().slice(0, 8),
+    });
+    currentTx = s;
+    const pill = $("#status-pill");
+    pill.innerHTML = `<span class="pill warn">${s.status}</span>`;
+    setKv("#result-kv", [
+      ["Transaction ID", s.transaction_id],
+      ["Status", s.status],
+      ["Off-ramp ref", s.offramp_ref ?? "(pending)"],
+      ["UTR", s.utr ?? "(awaiting webhook)"],
+    ]);
+    hide("#card-quote");
+    show("#card-result");
+    refreshTxList();
+    // Simulate the off-ramp partner reporting success after 1.5s for the demo
+    setTimeout(simulateWebhook, 1500);
+  } catch (e) {
+    alert("Settle failed: " + e.message);
+  }
+});
+
+async function simulateWebhook() {
+  if (!currentQuote || !currentTx) return;
+  try {
+    await fetch("/v1/webhooks/offramp", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-signature": "devsecret" },
+      body: JSON.stringify({
+        event_id: "evt_" + uuid(),
+        event_type: "PAYOUT_SUCCESS",
+        client_ref: currentQuote.quote_id,
+        provider_ref: currentTx.offramp_ref,
+        utr: "UTR" + Math.floor(Math.random() * 1e9).toString().padStart(9, "0"),
+      }),
+    });
+    $("#status-pill").innerHTML = `<span class="pill ok">SETTLED</span>`;
+    setTimeout(refreshTxList, 200);
+  } catch {
+    // ignore in demo
+  }
+}
+
+$("#btn-restart").addEventListener("click", () => {
+  currentQuote = null;
+  currentTx = null;
+  hide("#card-quote");
+  hide("#card-result");
+});
+
+async function refreshTxList() {
+  try {
+    const r = await api("GET", `/v1/users/${userId}/transactions`);
+    const list = r.transactions ?? [];
+    const el = $("#tx-list");
+    if (list.length === 0) {
+      el.className = "empty";
+      el.textContent = "No transactions yet.";
+      return;
+    }
+    el.className = "";
+    el.innerHTML = "";
+    for (const tx of list.slice(0, 8)) {
+      const div = document.createElement("div");
+      div.style.cssText = "padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 12px;";
+      const left = document.createElement("div");
+      left.innerHTML = `Rs ${tx.amount_inr} <span style="color:var(--muted)">via ${tx.source_asset}</span>`;
+      const right = document.createElement("div");
+      const cls = tx.status === "SETTLED" ? "ok" : tx.status.includes("REFUND") || tx.status === "FAILED" ? "err" : "warn";
+      right.innerHTML = `<span class="pill ${cls}">${tx.status}</span>`;
+      div.append(left, right);
+      el.append(div);
+    }
+  } catch {
+    // demo, ignore
+  }
+}
+
+refreshTxList();
+</script>
+</body>
+</html>
