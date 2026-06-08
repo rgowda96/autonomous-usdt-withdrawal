@@ -7,12 +7,13 @@ Loop MUST update this file every tick before exiting.
 
 ## Cursor
 
-Next task to attempt: **002.01**
+Next task to attempt: **002.02**
 
-Last completed: **v0.0.1 — settlement engine skeleton** (commit on `claude/blissful-davinci-Jw9jf`)
+Last completed: **002.01 — GET /v1/quotes/:id endpoint + 3 tests** (commit on `claude/blissful-davinci-Jw9jf`)
 
 ## Completed log (newest first)
 
+- 2026-06-08 — 002.01 — added GET /v1/quotes/:id; 3 new tests (happy, 404, expired flag); total 7/7 green.
 - 2026-06-08 — v0.0.1 — bootstrap. Fastify + SQLite ledger + quote/settle/webhook routes + 4 e2e tests passing.
 
 ## Decisions locked (do not re-litigate)

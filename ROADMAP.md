@@ -7,7 +7,7 @@ Rule: if a task needs a real API key, account, or partner agreement → mark `[B
 ---
 
 ## v0.0.2 — Hardening the core
-- [ ] 002.01 Add `GET /v1/quotes/:id` endpoint + test
+- [x] 002.01 Add `GET /v1/quotes/:id` endpoint + test
 - [ ] 002.02 Add `GET /v1/transactions/:id` endpoint with full event timeline + test
 - [ ] 002.03 Add reconciliation sweeper job (orphan USDC_RECEIVED >10min → auto-refund path) + test
 - [ ] 002.04 Add `/v1/users/:id/tds/summary?fy=YYYY-YY` endpoint returning quarterly TDS totals + test

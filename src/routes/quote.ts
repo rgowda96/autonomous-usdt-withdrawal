@@ -1,8 +1,28 @@
 import type { FastifyInstance } from "fastify";
 import { QuoteRequestSchema } from "../types.js";
-import { createQuote } from "../services/quote.js";
+import { createQuote, getQuote } from "../services/quote.js";
 
 export async function registerQuoteRoutes(app: FastifyInstance) {
+  app.get("/v1/quotes/:id", async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const q = getQuote(id);
+    if (!q) return reply.code(404).send({ error: "QUOTE_NOT_FOUND" });
+    return reply.send({
+      quote_id: q.id,
+      user_id: q.user_id,
+      amount_inr: q.amount_inr,
+      source_asset: q.route_plan.source_asset,
+      source_chain: q.route_plan.source_chain,
+      source_amount: q.route_plan.source_amount,
+      rate_inr_per_unit: q.rate_inr_per_unit,
+      total_fee_bps: q.route_plan.total_fee_bps,
+      tds_inr: q.route_plan.tds_inr,
+      expires_at: q.expires_at,
+      expired: q.expires_at < Date.now(),
+      steps: q.route_plan.steps,
+    });
+  });
+
   app.post("/v1/quote", async (req, reply) => {
     const parsed = QuoteRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "INVALID_REQUEST", details: parsed.error.flatten() });
