@@ -8,10 +8,24 @@ The first phase is dedicated to **giving the first user (you) something to poke*
 
 ---
 
-## Phase A — Testable surface FIRST (user can poke after each task)
+## Phase A — Testable mobile surface FIRST (founder pokes it via Expo Go)
+
+Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
+
 - [x] 002.01 Add `GET /v1/quotes/:id` endpoint + test
-- [x] A.01 Add a single-file demo HTML page at `/` (vanilla JS, no build) — shows: "Scan QR" (paste VPA), amount input, "Get Quote", quote card, "Confirm Pay", success receipt. Hits the live API.
-- [ ] A.01.fix Followups from code-review on A.01: (a) copy `src/public/*` to `dist/` in build step so prod `tsc` boot doesn't ENOENT, (b) extract shared `seedDemoUser(conn)` helper used by both `src/server.ts` and `src/db/seed.ts`, (c) replace innerHTML uses in tx list with textContent + classList to harden against future stored-XSS, (d) replace hand-rolled uuid() with `crypto.randomUUID()` in demo HTML, (e) upgrade `test/demo_page.test.ts` to boot fastify and GET / instead of grep-on-disk.
+- [x] A.01 Web demo HTML at `/` (kept as backend debug surface; not the user surface)
+- [x] A.deploy Dockerfile + Render/Fly configs + RUN docs
+- [x] A.mobile Scaffold Expo app at `apps/mobile/` + CORS on backend; single-screen pay flow in Expo Go
+- [ ] A.mobile.2 Real biometric confirm via `expo-local-authentication`
+- [ ] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
+- [ ] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
+- [ ] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
+- [ ] A.mobile.6 Empty-state + onboarding screens
+- [ ] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
+- [ ] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
+- [ ] A.mobile.9 Recent payees autocomplete
+- [ ] A.mobile.10 Android UPI deeplink intent filter (requires EAS Build, not Expo Go)
+- [ ] A.01.fix Followups from code-review on A.01 (web demo): copy `src/public/*` to `dist/`, extract shared `seedDemoUser(conn)`, replace innerHTML in tx list, use `crypto.randomUUID()`, upgrade `test/demo_page.test.ts` to boot fastify + GET /.
 - [ ] A.02 Pre-seed demo user on first server boot so the demo page just works
 - [ ] A.03 Add a "Recent transactions" list panel on the demo page
 - [ ] A.04 Add visual loading + error states (failure modes look like the real product)

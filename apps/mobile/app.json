@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "StablePay",
+    "slug": "stablepay",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "io.stablepay.app"
+    },
+    "android": {
+      "package": "io.stablepay.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0b0d12"
+      }
+    },
+    "extra": {
+      "apiBaseUrl": "http://localhost:3000"
+    }
+  }
+}

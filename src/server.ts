@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,6 +18,9 @@ async function main() {
       ? { transport: { target: "pino-pretty" } }
       : true,
   });
+
+  // CORS — mobile app (Expo) and any local web demo
+  await app.register(cors, { origin: true });
 
   // Initialize DB at boot
   db();

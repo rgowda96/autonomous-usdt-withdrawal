@@ -1,0 +1,95 @@
+import Constants from "expo-constants";
+
+const DEMO_USER_ID = "user_demo_1";
+
+const baseUrl: string =
+  (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ?? "http://localhost:3000";
+
+export type QuoteResponse = {
+  quote_id: string;
+  amount_inr: number;
+  source_asset: string;
+  source_chain: string;
+  source_amount: string;
+  rate_inr_per_unit: string;
+  total_fee_bps: number;
+  tds_inr: number;
+  expires_at: number;
+  steps: unknown[];
+};
+
+export type SettleResponse = {
+  transaction_id: string;
+  status: string;
+  offramp_ref?: string;
+  utr?: string;
+};
+
+export type Transaction = {
+  id: string;
+  status: string;
+  amount_inr: number;
+  source_asset: string;
+  source_chain: string;
+  source_amount: string;
+  tds_inr: number;
+  upi_utr: string | null;
+  onchain_tx: string | null;
+  created_at: number;
+};
+
+function uuid(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error((json && json.error) || `HTTP ${res.status}`);
+  return json as T;
+}
+
+export const api = {
+  baseUrl,
+  health: () => request<{ ok: boolean; version: string }>("GET", "/healthz"),
+  quote: (vpa: string, amount_inr: number) =>
+    request<QuoteResponse>("POST", "/v1/quote", {
+      idempotency_key: uuid(),
+      user_id: DEMO_USER_ID,
+      payee: { type: "vpa", identifier: vpa, display_name: vpa.split("@")[0] },
+      amount_inr,
+      channel: "qr",
+      asset_preference: "auto_cheapest",
+    }),
+  settle: (quoteId: string) =>
+    request<SettleResponse>("POST", "/v1/settle", {
+      idempotency_key: uuid(),
+      quote_id: quoteId,
+      auth_proof: `demo-passkey-${uuid().slice(0, 8)}`,
+    }),
+  simulateWebhook: (quoteId: string, providerRef: string) =>
+    fetch(`${baseUrl}/v1/webhooks/offramp`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-signature": "devsecret" },
+      body: JSON.stringify({
+        event_id: `evt_${uuid()}`,
+        event_type: "PAYOUT_SUCCESS",
+        client_ref: quoteId,
+        provider_ref: providerRef,
+        utr: "UTR" + Math.floor(Math.random() * 1e9).toString().padStart(9, "0"),
+      }),
+    }),
+  transactions: () =>
+    request<{ user_id: string; transactions: Transaction[] }>(
+      "GET",
+      `/v1/users/${DEMO_USER_ID}/transactions`
+    ),
+};
