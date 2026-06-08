@@ -7,9 +7,9 @@ Loop MUST update this file every tick before exiting.
 
 ## Cursor
 
-Next task to attempt: **A.02** (pre-seed demo user on first boot — actually subsumed by A.01 implementation; loop should flip A.02 to [x] on next read and proceed to A.03)
+Next task to attempt: **A.02** (already subsumed by A.01 — loop should flip to [x] and proceed to A.03)
 
-Last completed: **A.01 — demo HTML page at /**
+Last completed: **A.01 — demo HTML page at / + idempotent seeding fix (PR #1 merged via squash)**
 
 ## Priority rules
 
@@ -19,7 +19,7 @@ Last completed: **A.01 — demo HTML page at /**
 
 ## Completed log (newest first)
 
-- 2026-06-08 — A.01 — added single-file demo HTML at `/` (vanilla JS, no build). Walks scan → quote → confirm → success → recent txns. Auto-seeds demo user on first boot. Test asserts HTML references all core endpoints. 8/8 green.
+- 2026-06-08 — A.01 — PR #1 merged. First full autonomous tick under multi-agent protocol: Builder (HTML+server+test) → CI green → Code Reviewer (6 findings, 1 HIGH) → Fix on task branch → re-CI green → Merger squash-merged. 8/8 tests green. 5 follow-up cleanup tasks logged as A.01.fix.
 - 2026-06-08 — autonomy/mission upgrade — shipped MISSION.md (north-star, immutable), AGENTS.md (crew roster: Orchestrator, Mission Guardian, Architect, Builder, Code Reviewer, Security Reviewer, Product Listener, Merger, Loop Doctor), updated CLAUDE.md to require Mission Guardian gates at both task-selection and pre-merge.
 - 2026-06-08 — 002.01 — added GET /v1/quotes/:id; 3 new tests (happy, 404, expired flag); total 7/7 green.
 - 2026-06-08 — v0.0.1 — bootstrap. Fastify + SQLite ledger + quote/settle/webhook routes + 4 e2e tests passing.
