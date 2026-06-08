@@ -1,8 +1,36 @@
 # StablePay Mobile
 
-Expo (React Native) app — the primary first-user surface. Runs on your phone via the Expo Go app, points at the backend API running on your laptop or deployed.
+Expo (React Native) app. Runs on your phone via Expo Go, in your browser via Expo Web, or as a native build via EAS.
 
-## Run it (5 minutes)
+## Three ways to test it
+
+| Mode | Command | Use when |
+|---|---|---|
+| **Web (in any browser, no phone needed)** | `npm run web` | Fastest iteration; what you reach for first |
+| **Phone via Expo Go** | `npx expo start` then scan QR | Real device feel, native gestures, touch |
+| **Native build** | `eas build --profile preview` | Final dogfooding; once we eject from Expo Go |
+
+## Quick start — Web (no phone needed)
+
+```bash
+# terminal 1 — backend
+npm install
+npm run dev
+# leave running
+
+# terminal 2 — mobile-as-web
+cd apps/mobile
+npm install
+npm run web
+```
+
+Opens `http://localhost:8081` in your browser. The whole mobile app — tabs, navigation, animations, haptics (haptics no-op on web), screens — renders right there. Use Chrome DevTools' device toolbar (Cmd+Shift+M) to simulate a phone size.
+
+This is the fastest way to iterate. When you want real device feel (touch, native gestures), do the phone route below.
+
+---
+
+## Phone (Expo Go)
 
 ### Prereqs
 - Node 22 on your laptop
