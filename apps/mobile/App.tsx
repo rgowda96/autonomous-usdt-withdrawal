@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ConnectionBanner } from "./src/components/ConnectionBanner";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { PayEnterScreen } from "./src/screens/PayEnterScreen";
 import { PayReviewScreen } from "./src/screens/PayReviewScreen";
@@ -53,6 +54,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer theme={navTheme}>
+          <ConnectionBanner />
           <Tabs.Navigator
             screenOptions={{
               headerShown: false,
