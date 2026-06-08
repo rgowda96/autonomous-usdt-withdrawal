@@ -5,6 +5,25 @@
 > recurring subscription, or via an AI agent acting on their behalf — at
 > **near-zero fees**, with **no card** in the path for domestic merchants.
 
+## Positioning
+
+**StablePay is a direct competitor to RedotPay**, built India-first and India-legal.
+Where RedotPay routes Indian payments through a foreign Visa BIN sponsor (StraitsX) and
+charges ~11% effective, StablePay routes through licensed Indian rails (UPI via a PA
+partner) at ~1%. The product is **mobile-first** (Expo / React Native today, EAS native
+later) — a card is not the primary product and exists only as a fallback for foreign
+travel / ATM in v0.5+.
+
+## India compliance (non-negotiable — every PR is checked against this)
+
+1. **VASP-registered with FIU-IND** before going live to any non-founder user.
+2. **§194S TDS at 1%** deducted at source on every off-ramp; quarterly Form 26QE filed; user gets Form 16E for ITR credit.
+3. **§115BBH 30%** on crypto gains: tracked via FIFO cost-basis ledger; user gets clean ITR-export CSV.
+4. **PMLA / Travel Rule** — Sumsub or HyperVerge KYC on every user before first off-ramp; Chainalysis KYT on every incoming on-chain deposit.
+5. **UPI rails via a licensed PA / AD-II partner** — Onmeta (v0.1), Cashfree Payouts (v0.4+). Never self-issue UPI; always partner.
+6. **No solicitation of users without RBI/SEBI/MeitY clearances applicable to crypto-INR settlement.** v0 is founder-only; v0.2 is allowlist beta after VASP registration in flight.
+7. **No real money in v0.** Mock + Base Sepolia testnet only. `allow_real_money: false` is permanent in STATE.md until human flips it.
+
 ## North-star metrics (every PR must move us toward these, never away)
 
 1. **Effective fee on a domestic INR purchase ≤ 1.0%** (vs RedotPay's ~11%). Target: 0.5% at scale.
@@ -21,7 +40,10 @@
 - A custodial wallet where StablePay holds keys. (Smart accounts only.)
 - A consumer card as the primary product. (Card is fallback for foreign ATM only.)
 - A B2B merchant acquirer. (Merchants don't integrate; UPI rail already universal.)
+- A web-first product. (Mobile-first; web demo is for backend debugging only.)
 - Anything that requires changing user behavior beyond installing one app.
+- Any feature that requires StablePay to hold INR float without a PA partner.
+- Operating in geographies other than India in v0/v1.
 
 ## Mission guardrails (every tick is checked against these)
 
