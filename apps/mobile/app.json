@@ -16,6 +16,10 @@
         "backgroundColor": "#0b0d12"
       }
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "extra": {
       "apiBaseUrl": "http://localhost:3000"
     }
