@@ -10,7 +10,8 @@ The first phase is dedicated to **giving the first user (you) something to poke*
 
 ## Phase A — Testable surface FIRST (user can poke after each task)
 - [x] 002.01 Add `GET /v1/quotes/:id` endpoint + test
-- [ ] A.01 Add a single-file demo HTML page at `/` (vanilla JS, no build) — shows: "Scan QR" (paste VPA), amount input, "Get Quote", quote card, "Confirm Pay", success receipt. Hits the live API.
+- [x] A.01 Add a single-file demo HTML page at `/` (vanilla JS, no build) — shows: "Scan QR" (paste VPA), amount input, "Get Quote", quote card, "Confirm Pay", success receipt. Hits the live API.
+- [ ] A.01.fix Followups from code-review on A.01: (a) copy `src/public/*` to `dist/` in build step so prod `tsc` boot doesn't ENOENT, (b) extract shared `seedDemoUser(conn)` helper used by both `src/server.ts` and `src/db/seed.ts`, (c) replace innerHTML uses in tx list with textContent + classList to harden against future stored-XSS, (d) replace hand-rolled uuid() with `crypto.randomUUID()` in demo HTML, (e) upgrade `test/demo_page.test.ts` to boot fastify and GET / instead of grep-on-disk.
 - [ ] A.02 Pre-seed demo user on first server boot so the demo page just works
 - [ ] A.03 Add a "Recent transactions" list panel on the demo page
 - [ ] A.04 Add visual loading + error states (failure modes look like the real product)

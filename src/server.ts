@@ -1,10 +1,15 @@
 import Fastify from "fastify";
+import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { config } from "./config.js";
-import { db } from "./db/index.js";
+import { db, now } from "./db/index.js";
 import { registerQuoteRoutes } from "./routes/quote.js";
 import { registerSettleRoutes } from "./routes/settle.js";
 import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function main() {
   const app = Fastify({
@@ -15,8 +20,12 @@ async function main() {
 
   // Initialize DB at boot
   db();
+  ensureDemoUser();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
+
+  const indexHtml = await readFile(resolve(__dirname, "public/index.html"), "utf8");
+  app.get("/", async (_req, reply) => reply.type("text/html").send(indexHtml));
 
   await registerQuoteRoutes(app);
   await registerSettleRoutes(app);
@@ -24,6 +33,21 @@ async function main() {
   await registerWalletRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
+}
+
+function ensureDemoUser() {
+  const userId = "user_demo_1";
+  const conn = db();
+  conn.transaction(() => {
+    conn.prepare(`INSERT OR IGNORE INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`)
+      .run(userId, now(), "approved");
+    const ins = conn.prepare(
+      `INSERT OR IGNORE INTO balances (user_id, asset, chain, amount, updated_at) VALUES (?, ?, ?, ?, ?)`
+    );
+    ins.run(userId, "USDC", "base", "1000.000000", now());
+    ins.run(userId, "USDT", "tron", "500.000000", now());
+    ins.run(userId, "INR_CREDIT", "internal", "2000.00", now());
+  })();
 }
 
 main().catch((err) => {
