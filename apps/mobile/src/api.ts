@@ -60,6 +60,11 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 export const api = {
   baseUrl,
   health: () => request<{ ok: boolean; version: string }>("GET", "/healthz"),
+  balances: () =>
+    request<{ user_id: string; balances: { asset: string; chain: string; amount: string }[] }>(
+      "GET",
+      `/v1/users/${DEMO_USER_ID}/balances`
+    ),
   quote: (vpa: string, amount_inr: number) =>
     request<QuoteResponse>("POST", "/v1/quote", {
       idempotency_key: uuid(),
