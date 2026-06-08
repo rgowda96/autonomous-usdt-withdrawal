@@ -1,8 +1,8 @@
 import Constants from "expo-constants";
 
-const DEMO_USER_ID = "user_demo_1";
+export const DEMO_USER_ID = "user_demo_1";
 
-const baseUrl: string =
+export const baseUrl: string =
   (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ?? "http://localhost:3000";
 
 export type QuoteResponse = {
