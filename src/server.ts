@@ -38,16 +38,16 @@ async function main() {
 function ensureDemoUser() {
   const userId = "user_demo_1";
   const conn = db();
-  const u = conn.prepare(`SELECT id FROM users WHERE id = ?`).get(userId);
-  if (u) return;
-  conn.prepare(`INSERT INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`)
-    .run(userId, now(), "approved");
-  const ins = conn.prepare(
-    `INSERT INTO balances (user_id, asset, chain, amount, updated_at) VALUES (?, ?, ?, ?, ?)`
-  );
-  ins.run(userId, "USDC", "base", "1000.000000", now());
-  ins.run(userId, "USDT", "tron", "500.000000", now());
-  ins.run(userId, "INR_CREDIT", "internal", "2000.00", now());
+  conn.transaction(() => {
+    conn.prepare(`INSERT OR IGNORE INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`)
+      .run(userId, now(), "approved");
+    const ins = conn.prepare(
+      `INSERT OR IGNORE INTO balances (user_id, asset, chain, amount, updated_at) VALUES (?, ?, ?, ?, ?)`
+    );
+    ins.run(userId, "USDC", "base", "1000.000000", now());
+    ins.run(userId, "USDT", "tron", "500.000000", now());
+    ins.run(userId, "INR_CREDIT", "internal", "2000.00", now());
+  })();
 }
 
 main().catch((err) => {
