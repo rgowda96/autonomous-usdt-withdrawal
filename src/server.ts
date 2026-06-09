@@ -10,6 +10,7 @@ import { registerSettleRoutes } from "./routes/settle.js";
 import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
+import { warmRates } from "./services/rates.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,7 @@ async function main() {
   db();
   ensureDemoUser();
   startRateLimitSweeper();
+  warmRates();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
 
