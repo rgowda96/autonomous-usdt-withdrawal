@@ -2,7 +2,9 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import { initBaseUrl } from "./src/api";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ConnectionBanner } from "./src/components/ConnectionBanner";
@@ -61,6 +63,9 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 }
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => { initBaseUrl().finally(() => setReady(true)); }, []);
+  if (!ready) return null;
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

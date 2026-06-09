@@ -1,9 +1,28 @@
 import Constants from "expo-constants";
+import { getStoredApiBaseUrl } from "./storage";
 
 export const DEMO_USER_ID = "user_demo_1";
 
-export const baseUrl: string =
+export const defaultBaseUrl: string =
   (Constants.expoConfig?.extra?.apiBaseUrl as string | undefined) ?? "http://localhost:3000";
+
+let overrideBaseUrl: string | null = null;
+
+export function getBaseUrl(): string {
+  return overrideBaseUrl ?? defaultBaseUrl;
+}
+
+export function setBaseUrlOverride(url: string | null): void {
+  overrideBaseUrl = url && url.length > 0 ? url : null;
+}
+
+// Backwards-compat export: most code reads `baseUrl` for display only.
+export const baseUrl = defaultBaseUrl;
+
+export async function initBaseUrl(): Promise<void> {
+  const stored = await getStoredApiBaseUrl();
+  if (stored) overrideBaseUrl = stored;
+}
 
 export type QuoteResponse = {
   quote_id: string;
@@ -61,7 +80,7 @@ function uuid(): string {
 }
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const res = await fetch(`${baseUrl}${path}`, {
+  const res = await fetch(`${getBaseUrl()}${path}`, {
     method,
     headers: { "content-type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
@@ -72,7 +91,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 }
 
 export const api = {
-  baseUrl,
+  get baseUrl() { return getBaseUrl(); },
   health: () => request<{ ok: boolean; version: string }>("GET", "/healthz"),
   balances: () =>
     request<{ user_id: string; balances: { asset: string; chain: string; amount: string }[] }>(
@@ -95,7 +114,7 @@ export const api = {
       auth_proof: `demo-passkey-${uuid().slice(0, 8)}`,
     }),
   simulateWebhook: (quoteId: string, providerRef: string) =>
-    fetch(`${baseUrl}/v1/webhooks/offramp`, {
+    fetch(`${getBaseUrl()}/v1/webhooks/offramp`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-signature": "devsecret" },
       body: JSON.stringify({
