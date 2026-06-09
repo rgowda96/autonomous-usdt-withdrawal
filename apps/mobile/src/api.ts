@@ -38,6 +38,20 @@ export type Transaction = {
   created_at: number;
 };
 
+export type TimelineEvent = { from: string | null; to: string; at: number; detail: unknown };
+
+export type TransactionDetail = Transaction & {
+  user_id: string;
+  payee: { identifier: string; display_name: string | null };
+  channel: string;
+  source: { asset: string; chain: string; amount: string };
+  rate_inr_per_unit: string;
+  offramp_ref: string | null;
+  route_plan: unknown | null;
+  updated_at: number;
+  timeline: TimelineEvent[];
+};
+
 function uuid(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -97,4 +111,5 @@ export const api = {
       "GET",
       `/v1/users/${DEMO_USER_ID}/transactions`
     ),
+  transaction: (id: string) => request<TransactionDetail>("GET", `/v1/transactions/${id}`),
 };

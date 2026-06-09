@@ -1,11 +1,15 @@
 import { useCallback, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import * as Haptics from "expo-haptics";
 import { Pill } from "../components/Pill";
 import { useTransactions } from "../state";
 import { theme } from "../theme";
+import type { HistoryStackParamList } from "../navigation";
 
-export function HistoryScreen() {
+export function HistoryListScreen() {
+  const nav = useNavigation<NativeStackNavigationProp<HistoryStackParamList>>();
   const { transactions, refresh } = useTransactions();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -33,7 +37,14 @@ export function HistoryScreen() {
         </View>
       ) : (
         transactions.map((t) => (
-          <View key={t.id} style={s.card}>
+          <Pressable
+            key={t.id}
+            onPress={() => {
+              Haptics.selectionAsync().catch(() => {});
+              nav.navigate("TxDetail", { txId: t.id });
+            }}
+            style={({ pressed }) => [s.card, pressed && { opacity: 0.7 }]}
+          >
             <View style={s.cardTop}>
               <View style={{ flex: 1 }}>
                 <Text style={s.cardAmount}>−₹{t.amount_inr}</Text>
@@ -47,9 +58,8 @@ export function HistoryScreen() {
             <View style={s.divider} />
             <Row k="Paid from" v={`${t.source_amount} ${t.source_asset}`} />
             <Row k="UTR" v={t.upi_utr ?? "—"} />
-            <Row k="TDS" v={`₹${t.tds_inr}`} />
-            <Row k="On-chain" v={t.onchain_tx ? `${t.onchain_tx.slice(0, 18)}…` : "—"} />
-          </View>
+            <Text style={s.tapHint}>Tap for full timeline →</Text>
+          </Pressable>
         ))
       )}
     </ScrollView>
@@ -81,4 +91,5 @@ const s = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
   rowK: { color: theme.color.textDim, fontSize: theme.font.small },
   rowV: { color: theme.color.text, fontSize: theme.font.small, fontFamily: theme.font.mono, flexShrink: 1, marginLeft: theme.space.md, textAlign: "right" },
+  tapHint: { color: theme.color.accent, fontSize: theme.font.tiny, fontWeight: "500", marginTop: theme.space.sm, textAlign: "right" },
 });
