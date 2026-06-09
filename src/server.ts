@@ -11,6 +11,7 @@ import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
+import { startIdempotencyCleanup } from "./services/sweepers.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -29,6 +30,7 @@ async function main() {
   ensureDemoUser();
   startRateLimitSweeper();
   warmRates();
+  startIdempotencyCleanup();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
 
