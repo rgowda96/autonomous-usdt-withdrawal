@@ -9,6 +9,8 @@ import { registerQuoteRoutes } from "./routes/quote.js";
 import { registerSettleRoutes } from "./routes/settle.js";
 import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
+import { registerSessionKeyRoutes } from "./routes/session_keys.js";
+import { registerAgentRoutes } from "./routes/agent.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
@@ -43,6 +45,8 @@ async function main() {
   await registerSettleRoutes(app);
   await registerWebhookRoutes(app);
   await registerWalletRoutes(app);
+  await registerSessionKeyRoutes(app);
+  await registerAgentRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
 }
