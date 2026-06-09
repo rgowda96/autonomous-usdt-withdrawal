@@ -11,7 +11,7 @@ import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
-import { startIdempotencyCleanup } from "./services/sweepers.js";
+import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
 import { pinoSerializers } from "./services/logging.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -32,6 +32,7 @@ async function main() {
   startRateLimitSweeper();
   warmRates();
   startIdempotencyCleanup();
+  startReconciliationSweeper();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
 
