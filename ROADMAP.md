@@ -16,14 +16,14 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] A.01 Web demo HTML at `/` (kept as backend debug surface; not the user surface)
 - [x] A.deploy Dockerfile + Render/Fly configs + RUN docs
 - [x] A.mobile Scaffold Expo app at `apps/mobile/` + CORS on backend; single-screen pay flow in Expo Go
-- [ ] A.mobile.2 Real biometric confirm via `expo-local-authentication`
+- [x] A.mobile.2 Real biometric confirm via `expo-local-authentication`
 - [ ] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
-- [ ] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
+- [x] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
 - [ ] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
 - [ ] A.mobile.6 Empty-state + onboarding screens
 - [ ] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
-- [ ] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
-- [ ] A.mobile.9 Recent payees autocomplete
+- [x] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
+- [x] A.mobile.9 Recent payees autocomplete
 - [ ] A.mobile.10 Android UPI deeplink intent filter (requires EAS Build, not Expo Go)
 - [ ] A.01.fix Followups from code-review on A.01 (web demo): copy `src/public/*` to `dist/`, extract shared `seedDemoUser(conn)`, replace innerHTML in tx list, use `crypto.randomUUID()`, upgrade `test/demo_page.test.ts` to boot fastify + GET /.
 - [ ] A.02 Pre-seed demo user on first server boot so the demo page just works
@@ -37,16 +37,16 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] A.10 Add an "Agent mode" toggle: simulates an LLM agent making a payment under the policy
 
 ## Phase B — Hardening the core
-- [ ] 002.02 Add `GET /v1/transactions/:id` endpoint + full event timeline + test
+- [x] 002.02 Add `GET /v1/transactions/:id` endpoint + full event timeline + test
 - [ ] 002.03 Add reconciliation sweeper job (orphan USDC_RECEIVED >10min → auto-refund) + test
-- [ ] 002.04 Add `/v1/users/:id/tds/summary?fy=YYYY-YY` endpoint + test
-- [ ] 002.05 Add request logging middleware (redact PII)
-- [ ] 002.06 Add per-user rate limit middleware + test
-- [ ] 002.07 Add idempotency-key TTL cleanup job (24h) + test
-- [ ] 002.08 Add `Dockerfile` + `docker-compose.yml`
+- [x] 002.04 Add `/v1/users/:id/tds/summary?fy=YYYY-YY` endpoint + test
+- [x] 002.05 Add request logging middleware (redact PII)
+- [x] 002.06 Add per-user rate limit middleware + test
+- [x] 002.07 Add idempotency-key TTL cleanup job (24h) + test
+- [x] 002.08 Add `Dockerfile` + `docker-compose.yml`
 
 ## Phase C — Routing engine v2
-- [ ] 003.01 Replace hard-coded rates with CoinGecko fetcher + 30s cache + test
+- [x] 003.01 Replace hard-coded rates with CoinGecko fetcher + 30s cache + test
 - [ ] 003.02 Add Binance P2P spread feed; fallback to CG
 - [ ] 003.03 Quote response surfaces per-step cost breakdown
 - [ ] 003.04 `auto_tax_optimal` mode: prefer assets with unrealized losses
