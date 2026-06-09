@@ -168,6 +168,36 @@ CREATE TABLE IF NOT EXISTS yield_snapshots (
   FOREIGN KEY (position_id) REFERENCES yield_positions(id)
 );
 
+CREATE TABLE IF NOT EXISTS billers (
+  id TEXT PRIMARY KEY,
+  category TEXT NOT NULL,             -- electricity, mobile, dth, gas, broadband, water, insurance
+  name TEXT NOT NULL,
+  vpa TEXT NOT NULL,
+  region TEXT,                        -- e.g. "MH", "KA", "ALL"
+  active INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE INDEX IF NOT EXISTS idx_biller_cat ON billers(category, active);
+
+CREATE TABLE IF NOT EXISTS mandates (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  label TEXT NOT NULL,                -- "Netflix", "Electricity bill", etc.
+  payee_vpa TEXT NOT NULL,
+  amount_inr INTEGER NOT NULL,
+  cadence TEXT NOT NULL,              -- monthly, weekly, daily
+  next_run_at INTEGER NOT NULL,
+  last_run_at INTEGER,
+  last_tx_id TEXT,
+  expires_at INTEGER,                 -- nullable: indefinite
+  revoked_at INTEGER,
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mandate_user ON mandates(user_id);
+CREATE INDEX IF NOT EXISTS idx_mandate_next ON mandates(next_run_at, revoked_at);
+
 CREATE TABLE IF NOT EXISTS yield_prefs (
   user_id TEXT NOT NULL,
   asset TEXT NOT NULL,
