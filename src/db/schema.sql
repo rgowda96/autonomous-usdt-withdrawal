@@ -97,3 +97,47 @@ CREATE TABLE IF NOT EXISTS webhook_events (
   received_at INTEGER NOT NULL,
   processed_at INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS session_keys (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  label TEXT NOT NULL,                -- "Claude Desktop", "Cursor", etc.
+  token_hash TEXT NOT NULL UNIQUE,    -- SHA256 of bearer token
+  daily_cap_inr INTEGER NOT NULL,
+  per_txn_cap_inr INTEGER NOT NULL,
+  vpa_allowlist TEXT,                 -- JSON array, null = any
+  expires_at INTEGER NOT NULL,
+  revoked_at INTEGER,
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_session_keys_user ON session_keys(user_id);
+CREATE INDEX IF NOT EXISTS idx_session_keys_token ON session_keys(token_hash);
+
+CREATE TABLE IF NOT EXISTS session_key_usage (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_key_id TEXT NOT NULL,
+  transaction_id TEXT,
+  amount_inr INTEGER NOT NULL,
+  vpa TEXT NOT NULL,
+  outcome TEXT NOT NULL,              -- ALLOWED, REJECTED_CAP, REJECTED_ALLOWLIST, REJECTED_EXPIRED, REJECTED_REVOKED
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (session_key_id) REFERENCES session_keys(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_skusage_session ON session_key_usage(session_key_id, created_at);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  kind TEXT NOT NULL,                 -- agent_payment, agent_rejected, ...
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  ref_id TEXT,                        -- transaction_id, session_key_id, etc.
+  created_at INTEGER NOT NULL,
+  read_at INTEGER,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at);
