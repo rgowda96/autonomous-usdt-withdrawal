@@ -20,6 +20,7 @@ import { startMandateExecutor } from "./services/mandates.js";
 import { registerMetricsRoutes } from "./routes/metrics.js";
 import { installTracing } from "./services/tracing.js";
 import { registerComplianceRoutes } from "./routes/compliance.js";
+import { registerBetaRoutes } from "./routes/beta.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
@@ -67,6 +68,7 @@ async function main() {
   await registerBillRoutes(app);
   await registerMetricsRoutes(app);
   await registerComplianceRoutes(app);
+  await registerBetaRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
 }

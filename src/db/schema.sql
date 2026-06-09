@@ -168,6 +168,20 @@ CREATE TABLE IF NOT EXISTS yield_snapshots (
   FOREIGN KEY (position_id) REFERENCES yield_positions(id)
 );
 
+CREATE TABLE IF NOT EXISTS beta_invites (
+  code TEXT PRIMARY KEY,
+  invited_by TEXT,
+  cohort TEXT NOT NULL,                -- "founder", "internal", "wave-1", etc.
+  email TEXT,
+  consumed_by_user_id TEXT,
+  consumed_at INTEGER,
+  expires_at INTEGER,
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (consumed_by_user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_beta_cohort ON beta_invites(cohort, consumed_at);
+
 CREATE TABLE IF NOT EXISTS kyc_records (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
