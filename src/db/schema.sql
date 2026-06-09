@@ -141,3 +141,39 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS yield_positions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  asset TEXT NOT NULL,
+  chain TEXT NOT NULL,
+  venue TEXT NOT NULL,                -- "aave_v3_base_sepolia", "morpho_blue", etc.
+  principal TEXT NOT NULL,            -- decimal string, asset-native
+  current_value TEXT NOT NULL,        -- principal + accrued yield
+  apy_bps INTEGER NOT NULL,           -- snapshot at last update
+  opened_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  closed_at INTEGER,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_yield_user ON yield_positions(user_id, closed_at);
+
+CREATE TABLE IF NOT EXISTS yield_snapshots (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  position_id TEXT NOT NULL,
+  value TEXT NOT NULL,
+  apy_bps INTEGER NOT NULL,
+  taken_at INTEGER NOT NULL,
+  FOREIGN KEY (position_id) REFERENCES yield_positions(id)
+);
+
+CREATE TABLE IF NOT EXISTS yield_prefs (
+  user_id TEXT NOT NULL,
+  asset TEXT NOT NULL,
+  chain TEXT NOT NULL,
+  enabled INTEGER NOT NULL DEFAULT 0,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (user_id, asset, chain),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
