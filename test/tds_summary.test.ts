@@ -12,6 +12,8 @@ const Fastify = (await import("fastify")).default;
 
 function reset() {
   db().exec(`
+    DELETE FROM realized_gains;
+    DELETE FROM cost_basis_lots;
     DELETE FROM webhook_events;
     DELETE FROM tds_accruals;
     DELETE FROM transaction_events;
@@ -22,7 +24,7 @@ function reset() {
   `);
 }
 function seed(id: string) {
-  db().prepare(`INSERT INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`).run(id, now(), "approved");
+  db().prepare(`INSERT OR IGNORE INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`).run(id, now(), "approved");
   db().prepare(`INSERT INTO balances (user_id, asset, chain, amount, updated_at) VALUES (?, ?, ?, ?, ?)`)
     .run(id, "USDC", "base", "1000", now());
 }
