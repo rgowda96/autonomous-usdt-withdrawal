@@ -32,6 +32,11 @@ class MockAdapter implements OffRampAdapter {
 // Onmeta / Cashfree adapters will implement the same interface later.
 export function getOffRamp(): OffRampAdapter {
   switch (config.OFFRAMP_PROVIDER) {
+    case "onmeta": {
+      // Lazy import avoids circular dep on the rare case the file is imported during DB init
+      const { OnmetaAdapter, FallbackOffRamp } = require("./offramp_onmeta.js") as typeof import("./offramp_onmeta.js");
+      return new FallbackOffRamp(new OnmetaAdapter(), new MockAdapter());
+    }
     case "mock":
     default:
       return new MockAdapter();
