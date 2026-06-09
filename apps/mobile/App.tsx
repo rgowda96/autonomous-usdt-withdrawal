@@ -10,13 +10,15 @@ import { HomeScreen } from "./src/screens/HomeScreen";
 import { PayEnterScreen } from "./src/screens/PayEnterScreen";
 import { PayReviewScreen } from "./src/screens/PayReviewScreen";
 import { PaySuccessScreen } from "./src/screens/PaySuccessScreen";
-import { HistoryScreen } from "./src/screens/HistoryScreen";
+import { HistoryListScreen } from "./src/screens/HistoryScreen";
+import { TxDetailScreen } from "./src/screens/TxDetailScreen";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
 import { theme } from "./src/theme";
-import type { PayFlowParamList, RootTabsParamList } from "./src/navigation";
+import type { HistoryStackParamList, PayFlowParamList, RootTabsParamList } from "./src/navigation";
 
 const Tabs = createBottomTabNavigator<RootTabsParamList>();
 const PayStack = createNativeStackNavigator<PayFlowParamList>();
+const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
 
 function PayFlowNavigator() {
   return (
@@ -25,6 +27,15 @@ function PayFlowNavigator() {
       <PayStack.Screen name="PayReview" component={PayReviewScreen} />
       <PayStack.Screen name="PaySuccess" component={PaySuccessScreen} />
     </PayStack.Navigator>
+  );
+}
+
+function HistoryNavigator() {
+  return (
+    <HistoryStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.color.bg } }}>
+      <HistoryStack.Screen name="HistoryList" component={HistoryListScreen} />
+      <HistoryStack.Screen name="TxDetail" component={TxDetailScreen} />
+    </HistoryStack.Navigator>
   );
 }
 
@@ -83,7 +94,7 @@ export default function App() {
             />
             <Tabs.Screen
               name="History"
-              component={HistoryScreen}
+              component={HistoryNavigator}
               options={{ tabBarIcon: ({ focused }) => <TabIcon label="📜" focused={focused} /> }}
             />
             <Tabs.Screen

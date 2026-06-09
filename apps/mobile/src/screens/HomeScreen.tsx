@@ -61,7 +61,7 @@ export function HomeScreen() {
 
       <View style={s.recentHeader}>
         <Text style={s.section}>Recent activity</Text>
-        <Text style={s.seeAll} onPress={() => nav.navigate("History")}>See all</Text>
+        <Text style={s.seeAll} onPress={() => nav.navigate("History", { screen: "HistoryList" })}>See all</Text>
       </View>
       <View>
         {recent.length === 0 ? (
