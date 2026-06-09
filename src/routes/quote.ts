@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { QuoteRequestSchema } from "../types.js";
 import { createQuote, getQuote } from "../services/quote.js";
+import { checkRateLimit } from "../services/rate_limit.js";
 
 export async function registerQuoteRoutes(app: FastifyInstance) {
   app.get("/v1/quotes/:id", async (req, reply) => {
@@ -26,6 +27,11 @@ export async function registerQuoteRoutes(app: FastifyInstance) {
   app.post("/v1/quote", async (req, reply) => {
     const parsed = QuoteRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "INVALID_REQUEST", details: parsed.error.flatten() });
+    const rl = checkRateLimit(`quote:${parsed.data.user_id}`, { windowMs: 60_000, max: 10 });
+    if (!rl.allowed) {
+      reply.header("Retry-After", Math.ceil((rl.resetAt - Date.now()) / 1000));
+      return reply.code(429).send({ error: "RATE_LIMITED", reset_at: rl.resetAt });
+    }
     try {
       const quote = createQuote(parsed.data);
       return reply.send({
