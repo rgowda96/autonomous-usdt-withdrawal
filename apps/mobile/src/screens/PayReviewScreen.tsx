@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp, NativeStackScreenProps } from "@react-n
 import * as Haptics from "expo-haptics";
 import { Button } from "../components/Button";
 import { api, type QuoteResponse } from "../api";
+import { biometricLabel, confirmWithBiometric } from "../biometric";
 import { theme } from "../theme";
 import type { PayFlowParamList } from "../navigation";
 
@@ -17,16 +18,24 @@ export function PayReviewScreen() {
   const [quote, setQuote] = useState<QuoteResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [settling, setSettling] = useState(false);
+  const [authLabel, setAuthLabel] = useState("Confirm");
 
   useEffect(() => {
     api
       .quote(vpa, amountInr)
       .then(setQuote)
       .catch((e) => setError(e.message));
+    biometricLabel().then(setAuthLabel);
   }, [vpa, amountInr]);
 
   const onConfirm = async () => {
     if (!quote) return;
+    const auth = await confirmWithBiometric(`Pay ₹${amountInr} to ${vpa}`);
+    if (!auth.ok) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      setError(`Authentication ${auth.reason}`);
+      return;
+    }
     setSettling(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     try {
@@ -87,7 +96,7 @@ export function PayReviewScreen() {
 
       <View style={{ flex: 1 }} />
 
-      <Button label={settling ? "Settling…" : "Confirm with FaceID"} onPress={onConfirm} loading={settling} />
+      <Button label={settling ? "Settling…" : `Confirm with ${authLabel}`} onPress={onConfirm} loading={settling} />
       <Button label="Cancel" onPress={() => nav.goBack()} variant="ghost" style={{ marginTop: theme.space.sm }} />
     </ScrollView>
   );
