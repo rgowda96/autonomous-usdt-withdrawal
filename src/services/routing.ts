@@ -1,4 +1,4 @@
-import type { Asset, AssetPreference, Chain, RoutePlan, RouteStep } from "../types.js";
+import type { Asset, AssetPreference, Chain, CostComponent, RoutePlan, RouteStep } from "../types.js";
 import { quoteRate } from "./rates.js";
 import { config } from "../config.js";
 
@@ -53,27 +53,34 @@ function buildPlan(h: Holding, amountInr: number, vpa: string): Scored {
   if (grossAssetAmount > h.amount) throw new Error("insufficient");
 
   const steps: RouteStep[] = [];
+  const breakdown: CostComponent[] = [];
   let feeBps = config.SPREAD_BPS;
+  const inrFor = (bps: number) => Math.round((amountInr * bps) / 10_000 * 100) / 100;
+  breakdown.push({ component: "Spread", bps: config.SPREAD_BPS, inr: inrFor(config.SPREAD_BPS) });
 
   // Bridge if not on settlement chain (base) and not internal INR
   if (h.asset !== "INR_CREDIT" && h.chain !== "base" && h.chain !== "internal") {
     const bps = BRIDGE_BPS[h.chain] ?? 20;
     steps.push({ kind: "bridge", from_chain: h.chain, to_chain: "base", venue: "lifi" });
     feeBps += bps;
+    breakdown.push({ component: `Bridge ${h.chain}->base`, bps, inr: inrFor(bps) });
   }
 
   // Swap to USDC if not already a stable
   if (h.asset !== "USDC" && h.asset !== "USDT" && h.asset !== "INR_CREDIT") {
     steps.push({ kind: "swap", from: h.asset, to: "USDC", venue: "1inch", est_slippage_bps: SWAP_BPS[h.asset] });
     feeBps += SWAP_BPS[h.asset];
+    breakdown.push({ component: `Swap ${h.asset}->USDC`, bps: SWAP_BPS[h.asset], inr: inrFor(SWAP_BPS[h.asset]) });
   }
 
   // Off-ramp (skip if INR_CREDIT already INR)
   if (h.asset !== "INR_CREDIT") {
     steps.push({ kind: "offramp", provider: config.OFFRAMP_PROVIDER, fee_bps: OFFRAMP_BPS });
     feeBps += OFFRAMP_BPS;
+    breakdown.push({ component: `Off-ramp (${config.OFFRAMP_PROVIDER})`, bps: OFFRAMP_BPS, inr: inrFor(OFFRAMP_BPS) });
   } else {
     feeBps += 10; // UPI rail only
+    breakdown.push({ component: "UPI rail", bps: 10, inr: inrFor(10) });
   }
 
   // UPI payout
@@ -91,6 +98,7 @@ function buildPlan(h: Holding, amountInr: number, vpa: string): Scored {
     total_fee_bps: feeBps,
     tds_inr: tdsInr,
     amount_inr: amountInr,
+    cost_breakdown: breakdown,
   };
 
   return { plan, score: feeBps + taxDrag };

@@ -24,6 +24,8 @@ export async function initBaseUrl(): Promise<void> {
   if (stored) overrideBaseUrl = stored;
 }
 
+export type CostComponent = { component: string; bps: number; inr: number };
+
 export type QuoteResponse = {
   quote_id: string;
   amount_inr: number;
@@ -35,6 +37,7 @@ export type QuoteResponse = {
   tds_inr: number;
   expires_at: number;
   steps: unknown[];
+  cost_breakdown?: CostComponent[];
 };
 
 export type SettleResponse = {

@@ -45,6 +45,7 @@ export async function registerQuoteRoutes(app: FastifyInstance) {
         tds_inr: quote.route_plan.tds_inr,
         expires_at: quote.expires_at,
         steps: quote.route_plan.steps,
+        cost_breakdown: quote.route_plan.cost_breakdown,
       });
     } catch (e: any) {
       return reply.code(400).send({ error: e.message });

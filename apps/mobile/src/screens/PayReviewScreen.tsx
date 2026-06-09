@@ -84,6 +84,16 @@ export function PayReviewScreen() {
         <Row k="You'll spend" v={`${quote.source_amount} ${quote.source_asset}`} />
         <Row k="Rate" v={`₹${parseFloat(quote.rate_inr_per_unit).toFixed(2)} / ${quote.source_asset}`} />
         <Row k="Fee" v={`${(quote.total_fee_bps / 100).toFixed(2)}%`} accent />
+        {quote.cost_breakdown && quote.cost_breakdown.length > 0 && (
+          <View style={s.breakdownBox}>
+            {quote.cost_breakdown.map((c, i) => (
+              <View key={i} style={s.breakdownRow}>
+                <Text style={s.breakdownK}>{c.component}</Text>
+                <Text style={s.breakdownV}>{(c.bps / 100).toFixed(2)}% · ₹{c.inr}</Text>
+              </View>
+            ))}
+          </View>
+        )}
         <Row k="TDS (§194S)" v={`₹${quote.tds_inr}`} />
         {(quote.source_asset === "ETH" || quote.source_asset === "BTC" || quote.source_asset === "SOL") && (
           <View style={s.warningBox}>
@@ -123,6 +133,10 @@ const s = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: theme.space.sm },
   rowK: { color: theme.color.textDim, fontSize: theme.font.small },
   rowV: { color: theme.color.text, fontSize: theme.font.small, fontFamily: theme.font.mono, flexShrink: 1, marginLeft: theme.space.md, textAlign: "right" },
+  breakdownBox: { marginTop: theme.space.sm, paddingLeft: theme.space.md, borderLeftWidth: 2, borderLeftColor: theme.color.border },
+  breakdownRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
+  breakdownK: { color: theme.color.textFaint, fontSize: theme.font.tiny },
+  breakdownV: { color: theme.color.textDim, fontSize: theme.font.tiny, fontFamily: theme.font.mono },
   warningBox: { marginTop: theme.space.md, padding: theme.space.md, backgroundColor: "rgba(232,181,0,0.10)", borderRadius: theme.radius.md, borderLeftWidth: 3, borderLeftColor: theme.color.warn },
   warningText: { color: theme.color.warn, fontSize: theme.font.small, lineHeight: 18 },
   loadingContainer: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: theme.color.bg },
