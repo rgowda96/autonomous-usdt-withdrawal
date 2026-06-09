@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
 import { Button } from "../components/Button";
-import { baseUrl, DEMO_USER_ID } from "../api";
+import { getBaseUrl, DEMO_USER_ID } from "../api";
 import { theme } from "../theme";
 import type { PayFlowParamList, RootTabsParamList } from "../navigation";
 
@@ -22,7 +22,7 @@ export function PaySuccessScreen() {
     const start = Date.now();
     const i = setInterval(async () => {
       try {
-        const r = await fetch(`${baseUrl}/v1/users/${DEMO_USER_ID}/transactions`);
+        const r = await fetch(`${getBaseUrl()}/v1/users/${DEMO_USER_ID}/transactions`);
         const j = await r.json();
         const found = j.transactions?.find((t: any) => t.id === tx.transaction_id);
         if (found?.upi_utr) {
