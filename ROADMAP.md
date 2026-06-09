@@ -19,7 +19,7 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] A.mobile.2 Real biometric confirm via `expo-local-authentication`
 - [ ] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
 - [x] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
-- [ ] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
+- [x] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
 - [ ] A.mobile.6 Empty-state + onboarding screens
 - [ ] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
 - [x] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
@@ -50,8 +50,8 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] 003.02 Add Binance P2P spread feed; fallback to CG
 - [x] 003.03 Quote response surfaces per-step cost breakdown
 - [ ] 003.04 `auto_tax_optimal` mode: prefer assets with unrealized losses
-- [ ] 003.05 Cost-basis ledger (FIFO)
-- [ ] 003.06 Surface tax preview in quote
+- [x] 003.05 Cost-basis ledger (FIFO)
+- [x] 003.06 Surface tax preview in quote
 - [ ] 003.07 Per-venue slippage simulation (1inch, Jupiter)
 
 ## Phase D — Postgres
@@ -63,17 +63,17 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 
 ## Phase E — Real off-ramp (Onmeta)
 - [B] 010.01 Onmeta sandbox account + API key  (HUMAN: signup + KYB)
-- [ ] 010.02 Onmeta adapter (sandbox)
-- [ ] 010.03 Webhook signature verification (HMAC-SHA256)
-- [ ] 010.04 Adapter contract tests with nock
-- [ ] 010.05 Fallback chain: Onmeta primary, mock fallback
+- [x] 010.02 Onmeta adapter (sandbox)
+- [x] 010.03 Webhook signature verification (HMAC-SHA256)
+- [x] 010.04 Adapter contract tests with nock
+- [x] 010.05 Fallback chain: Onmeta primary, mock fallback
 - [ ] 010.06 Daily reconciliation job vs Onmeta
 
 ## Phase F — Smart wallet + on-chain testnet
 - [B] 015.01 Pimlico API key (Base Sepolia)  (HUMAN)
 - [B] 015.02 Privy app credentials  (HUMAN)
-- [ ] 015.03 `services/wallet.ts`: ERC-4337 UserOp builder for USDC on Base Sepolia
-- [ ] 015.04 Deterministic test wallet generator
+- [x] 015.03 `services/wallet.ts`: ERC-4337 UserOp builder for USDC on Base Sepolia
+- [x] 015.04 Deterministic test wallet generator
 - [ ] 015.05 Real Base Sepolia broadcast (replaces 0xsim_)
 - [ ] 015.06 Deposit watcher → credit balance
 - [ ] 015.07 Pimlico paymaster (gas sponsorship)
@@ -95,25 +95,25 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] 025.05 Bharat QR (EMV) support
 
 ## Phase I — Multi-asset + bridge
-- [ ] 030.01 Solana adapter (USDC SPL devnet)
-- [ ] 030.02 Tron adapter (USDT TRC-20 testnet)
-- [ ] 030.03 LI.FI SDK for cross-chain
-- [ ] 030.04 E2E: USDT/Tron → bridge → Base USDC → off-ramp → UPI
-- [ ] 030.05 chainabstraction layer
+- [x] 030.01 Solana adapter (USDC SPL devnet)
+- [x] 030.02 Tron adapter (USDT TRC-20 testnet)
+- [x] 030.03 LI.FI SDK for cross-chain
+- [x] 030.04 E2E: USDT/Tron → bridge → Base USDC → off-ramp → UPI
+- [x] 030.05 chainabstraction layer
 
 ## Phase J — Yield-while-idle
 - [ ] 035.01 Aave V3 Base Sepolia adapter
-- [ ] 035.02 User toggle: yield_enabled per balance
-- [ ] 035.03 JIT unwind (atomic UserOp)
-- [ ] 035.04 Yield tracking per user
-- [ ] 035.05 Daily APY snapshot job
+- [x] 035.02 User toggle: yield_enabled per balance
+- [x] 035.03 JIT unwind (atomic UserOp)
+- [x] 035.04 Yield tracking per user
+- [x] 035.05 Daily APY snapshot job
 
 ## Phase K — Bills + mandates
-- [ ] 040.01 BBPS biller catalogue
-- [ ] 040.02 `mandates` table
-- [ ] 040.03 Mandate executor cron
-- [ ] 040.04 Mandate revoke + test
-- [ ] 040.05 E2E: 3 monthly executions then revoke
+- [x] 040.01 BBPS biller catalogue
+- [x] 040.02 `mandates` table
+- [x] 040.03 Mandate executor cron
+- [x] 040.04 Mandate revoke + test
+- [x] 040.05 E2E: 3 monthly executions then revoke
 
 ## Phase L — Mobile (Expo)
 - [ ] 050.01 Expo project + Privy SDK
@@ -127,34 +127,34 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] 050.09 E2E with Detox/Maestro
 
 ## Phase M — Compliance
-- [ ] 070.01 Sumsub KYC stub
+- [x] 070.01 Sumsub KYC stub
 - [B] 070.02 Sumsub production credentials  (HUMAN)
-- [ ] 070.03 FIU-IND daily report generator
-- [ ] 070.04 Travel rule attribution
-- [ ] 070.05 Chainalysis KYT stub
-- [ ] 070.06 Auto-freeze on sanctions match
+- [x] 070.03 FIU-IND daily report generator
+- [x] 070.04 Travel rule attribution
+- [x] 070.05 Chainalysis KYT stub
+- [x] 070.06 Auto-freeze on sanctions match
 
 ## Phase N — Observability
 - [ ] 080.01 OpenTelemetry tracing
-- [ ] 080.02 Prometheus `/metrics`
+- [x] 080.02 Prometheus `/metrics`
 - [ ] 080.03 Grafana dashboards
 - [ ] 080.04 SLO defs + alerts
-- [ ] 080.05 Structured logging + correlation IDs
+- [x] 080.05 Structured logging + correlation IDs
 
 ## Phase O — Hardening
 - [x] 090.01 Replay attack tests
 - [x] 090.02 Intent normalizer fuzz tests
-- [ ] 090.03 autocannon load test
-- [ ] 090.04 Security review checklist
-- [ ] 090.05 Backup + restore drill
+- [x] 090.03 autocannon load test
+- [x] 090.04 Security review checklist
+- [x] 090.05 Backup + restore drill
 
 ## Phase P — Launch readiness
 - [B] 100.01 VASP registration  (HUMAN)
 - [B] 100.02 PA partnership (Razorpay/Cashfree)  (HUMAN)
 - [B] 100.03 Production Postgres + Redis  (HUMAN)
-- [ ] 100.04 `docs/deploy.md`
-- [ ] 100.05 `docs/runbook.md`
-- [ ] 100.06 Beta-tester allowlist flow
+- [x] 100.04 `docs/deploy.md`
+- [x] 100.05 `docs/runbook.md`
+- [x] 100.06 Beta-tester allowlist flow
 
 ---
 
