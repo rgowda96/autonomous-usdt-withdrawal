@@ -3,6 +3,7 @@ import { db, now } from "../db/index.js";
 import { getQuote } from "./quote.js";
 import { accrueTds, appendEvent, setTxStatus } from "./ledger.js";
 import { getOffRamp } from "./offramp.js";
+import { incCounter } from "./metrics.js";
 import type { SettleRequest } from "../types.js";
 
 export type SettleResult = {
@@ -69,6 +70,10 @@ export async function settle(req: SettleRequest): Promise<SettleResult> {
 
   // TDS accrual happens at payout initiation; reversed if refunded.
   accrueTds(quote.user_id, txId, plan.tds_inr);
+
+  incCounter("stablepay_settlement_total", { source_asset: plan.source_asset, channel: "qr" });
+  incCounter("stablepay_settlement_inr_total", { source_asset: plan.source_asset }, quote.amount_inr);
+  incCounter("stablepay_tds_inr_total", {}, plan.tds_inr);
 
   return { transaction_id: txId, status: "PAYOUT_INITIATED", offramp_ref: payout.provider_ref };
 }
