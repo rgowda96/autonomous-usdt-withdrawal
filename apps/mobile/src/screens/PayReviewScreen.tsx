@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
 import { Button } from "../components/Button";
 import { api, type QuoteResponse } from "../api";
 import { biometricLabel, confirmWithBiometric } from "../biometric";
+import { useBalances } from "../state";
 import { theme } from "../theme";
 import type { PayFlowParamList } from "../navigation";
 
 type Props = NativeStackScreenProps<PayFlowParamList, "PayReview">;
+type AssetPref = "auto_cheapest" | { asset: string; chain: string };
 
 export function PayReviewScreen() {
   const route = useRoute<Props["route"]>();
@@ -19,14 +21,18 @@ export function PayReviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [settling, setSettling] = useState(false);
   const [authLabel, setAuthLabel] = useState("Confirm");
+  const [assetPref, setAssetPref] = useState<AssetPref>("auto_cheapest");
+  const { balances } = useBalances();
 
   useEffect(() => {
+    setQuote(null);
+    setError(null);
     api
-      .quote(vpa, amountInr)
+      .quote(vpa, amountInr, assetPref)
       .then(setQuote)
       .catch((e) => setError(e.message));
     biometricLabel().then(setAuthLabel);
-  }, [vpa, amountInr]);
+  }, [vpa, amountInr, assetPref]);
 
   const onConfirm = async () => {
     if (!quote) return;
@@ -76,6 +82,30 @@ export function PayReviewScreen() {
       <View style={s.heroCard}>
         <Text style={s.heroAmount}>₹{quote.amount_inr.toLocaleString("en-IN")}</Text>
         <Text style={s.heroVpa}>to {vpa}</Text>
+      </View>
+
+      <View style={s.card}>
+        <Text style={s.cardTitle}>Pay from</Text>
+        <View style={s.assetPickerRow}>
+          <Pressable
+            onPress={() => { Haptics.selectionAsync().catch(() => {}); setAssetPref("auto_cheapest"); }}
+            style={[s.assetChip, assetPref === "auto_cheapest" && s.assetChipActive]}
+          >
+            <Text style={[s.assetChipText, assetPref === "auto_cheapest" && s.assetChipTextActive]}>Auto · cheapest</Text>
+          </Pressable>
+          {balances.map((b) => {
+            const active = typeof assetPref === "object" && assetPref.asset === b.asset && assetPref.chain === b.chain;
+            return (
+              <Pressable
+                key={`${b.asset}-${b.chain}`}
+                onPress={() => { Haptics.selectionAsync().catch(() => {}); setAssetPref({ asset: b.asset, chain: b.chain }); }}
+                style={[s.assetChip, active && s.assetChipActive]}
+              >
+                <Text style={[s.assetChipText, active && s.assetChipTextActive]}>{b.asset}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <View style={s.card}>
@@ -133,6 +163,11 @@ const s = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: theme.space.sm },
   rowK: { color: theme.color.textDim, fontSize: theme.font.small },
   rowV: { color: theme.color.text, fontSize: theme.font.small, fontFamily: theme.font.mono, flexShrink: 1, marginLeft: theme.space.md, textAlign: "right" },
+  assetPickerRow: { flexDirection: "row", flexWrap: "wrap", gap: theme.space.sm },
+  assetChip: { paddingHorizontal: theme.space.md, paddingVertical: 6, borderRadius: theme.radius.pill, borderWidth: 1, borderColor: theme.color.border, backgroundColor: theme.color.bg },
+  assetChipActive: { backgroundColor: theme.color.accent, borderColor: theme.color.accent },
+  assetChipText: { color: theme.color.text, fontSize: theme.font.small, fontWeight: "500" },
+  assetChipTextActive: { color: "#fff" },
   breakdownBox: { marginTop: theme.space.sm, paddingLeft: theme.space.md, borderLeftWidth: 2, borderLeftColor: theme.color.border },
   breakdownRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
   breakdownK: { color: theme.color.textFaint, fontSize: theme.font.tiny },

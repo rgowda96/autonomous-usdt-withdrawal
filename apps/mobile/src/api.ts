@@ -101,14 +101,14 @@ export const api = {
       "GET",
       `/v1/users/${DEMO_USER_ID}/balances`
     ),
-  quote: (vpa: string, amount_inr: number) =>
+  quote: (vpa: string, amount_inr: number, asset_preference: unknown = "auto_cheapest") =>
     request<QuoteResponse>("POST", "/v1/quote", {
       idempotency_key: uuid(),
       user_id: DEMO_USER_ID,
       payee: { type: "vpa", identifier: vpa, display_name: vpa.split("@")[0] },
       amount_inr,
       channel: "qr",
-      asset_preference: "auto_cheapest",
+      asset_preference,
     }),
   settle: (quoteId: string) =>
     request<SettleResponse>("POST", "/v1/settle", {
