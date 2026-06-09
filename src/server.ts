@@ -9,6 +9,7 @@ import { registerQuoteRoutes } from "./routes/quote.js";
 import { registerSettleRoutes } from "./routes/settle.js";
 import { registerWebhookRoutes } from "./routes/webhook.js";
 import { registerWalletRoutes } from "./routes/wallet.js";
+import { startRateLimitSweeper } from "./services/rate_limit.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -25,6 +26,7 @@ async function main() {
   // Initialize DB at boot
   db();
   ensureDemoUser();
+  startRateLimitSweeper();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
 
