@@ -4,6 +4,7 @@ import { getQuote } from "./quote.js";
 import { accrueTds, appendEvent, setTxStatus } from "./ledger.js";
 import { getOffRamp } from "./offramp.js";
 import { incCounter } from "./metrics.js";
+import { disposeFifo } from "./cost_basis.js";
 import type { SettleRequest } from "../types.js";
 
 export type SettleResult = {
@@ -70,6 +71,22 @@ export async function settle(req: SettleRequest): Promise<SettleResult> {
 
   // TDS accrual happens at payout initiation; reversed if refunded.
   accrueTds(quote.user_id, txId, plan.tds_inr);
+
+  // FIFO cost-basis disposal (skip INR_CREDIT — already INR-denominated)
+  if (plan.source_asset !== "INR_CREDIT") {
+    try {
+      disposeFifo({
+        user_id: quote.user_id,
+        asset: plan.source_asset,
+        chain: plan.source_chain,
+        quantity: plan.source_amount,
+        proceeds_inr: quote.amount_inr,
+        transaction_id: txId,
+      });
+    } catch {
+      // disposal is informational; don't block payment if lot bookkeeping fails
+    }
+  }
 
   incCounter("stablepay_settlement_total", { source_asset: plan.source_asset, channel: "qr" });
   incCounter("stablepay_settlement_inr_total", { source_asset: plan.source_asset }, quote.amount_inr);

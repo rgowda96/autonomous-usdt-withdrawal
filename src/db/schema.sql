@@ -168,6 +168,35 @@ CREATE TABLE IF NOT EXISTS yield_snapshots (
   FOREIGN KEY (position_id) REFERENCES yield_positions(id)
 );
 
+CREATE TABLE IF NOT EXISTS cost_basis_lots (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  asset TEXT NOT NULL,
+  chain TEXT NOT NULL,
+  quantity TEXT NOT NULL,             -- decimal string, asset-native
+  cost_inr_per_unit TEXT NOT NULL,    -- decimal string (FIFO basis)
+  remaining_quantity TEXT NOT NULL,
+  acquired_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_lots_user_asset ON cost_basis_lots(user_id, asset, chain, acquired_at);
+
+CREATE TABLE IF NOT EXISTS realized_gains (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  transaction_id TEXT,
+  asset TEXT NOT NULL,
+  quantity_sold TEXT NOT NULL,
+  proceeds_inr INTEGER NOT NULL,
+  cost_basis_inr INTEGER NOT NULL,
+  gain_inr INTEGER NOT NULL,
+  realized_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_gains_user ON realized_gains(user_id, realized_at);
+
 CREATE TABLE IF NOT EXISTS beta_invites (
   code TEXT PRIMARY KEY,
   invited_by TEXT,

@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { QuoteRequestSchema } from "../types.js";
 import { createQuote, getQuote } from "../services/quote.js";
 import { checkRateLimit } from "../services/rate_limit.js";
+import { estimateCgTax } from "../services/cost_basis.js";
 
 export async function registerQuoteRoutes(app: FastifyInstance) {
   app.get("/v1/quotes/:id", async (req, reply) => {
@@ -34,6 +35,15 @@ export async function registerQuoteRoutes(app: FastifyInstance) {
     }
     try {
       const quote = createQuote(parsed.data);
+      const taxPreview = quote.route_plan.source_asset === "INR_CREDIT"
+        ? null
+        : estimateCgTax({
+            user_id: parsed.data.user_id,
+            asset: quote.route_plan.source_asset,
+            chain: quote.route_plan.source_chain,
+            quantity: quote.route_plan.source_amount,
+            proceeds_inr: quote.amount_inr,
+          });
       return reply.send({
         quote_id: quote.id,
         amount_inr: quote.amount_inr,
@@ -46,6 +56,7 @@ export async function registerQuoteRoutes(app: FastifyInstance) {
         expires_at: quote.expires_at,
         steps: quote.route_plan.steps,
         cost_breakdown: quote.route_plan.cost_breakdown,
+        tax_preview: taxPreview,
       });
     } catch (e: any) {
       return reply.code(400).send({ error: e.message });
