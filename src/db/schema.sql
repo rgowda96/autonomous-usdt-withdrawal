@@ -168,6 +168,51 @@ CREATE TABLE IF NOT EXISTS yield_snapshots (
   FOREIGN KEY (position_id) REFERENCES yield_positions(id)
 );
 
+CREATE TABLE IF NOT EXISTS kyc_records (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  provider TEXT NOT NULL,             -- sumsub, hyperverge, manual
+  status TEXT NOT NULL,                -- pending, approved, rejected, expired
+  document_type TEXT,                  -- aadhaar, pan, passport
+  document_last4 TEXT,
+  risk_level TEXT,                     -- low, medium, high
+  raw_response TEXT,                   -- JSON
+  reviewed_at INTEGER,
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kyc_user ON kyc_records(user_id, status);
+
+CREATE TABLE IF NOT EXISTS kyt_screenings (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  address TEXT NOT NULL,
+  chain TEXT NOT NULL,
+  risk_score INTEGER NOT NULL,         -- 0-100
+  category TEXT,                       -- exchange, gambling, sanctions, mixer, none
+  sanctions_hit INTEGER NOT NULL DEFAULT 0,
+  provider TEXT NOT NULL,              -- chainalysis, trm, mock
+  raw_response TEXT,
+  screened_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_kyt_user ON kyt_screenings(user_id);
+CREATE INDEX IF NOT EXISTS idx_kyt_addr ON kyt_screenings(address);
+
+CREATE TABLE IF NOT EXISTS compliance_freezes (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  reason TEXT NOT NULL,                -- sanctions_match, kyc_rejected, manual_review
+  source TEXT NOT NULL,                -- kyt, kyc, manual
+  ref_id TEXT,
+  created_at INTEGER NOT NULL,
+  released_at INTEGER,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_freeze_user ON compliance_freezes(user_id, released_at);
+
 CREATE TABLE IF NOT EXISTS billers (
   id TEXT PRIMARY KEY,
   category TEXT NOT NULL,             -- electricity, mobile, dth, gas, broadband, water, insurance

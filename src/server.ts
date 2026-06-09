@@ -19,6 +19,7 @@ import { seedBillers } from "./services/billers.js";
 import { startMandateExecutor } from "./services/mandates.js";
 import { registerMetricsRoutes } from "./routes/metrics.js";
 import { installTracing } from "./services/tracing.js";
+import { registerComplianceRoutes } from "./routes/compliance.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
@@ -65,6 +66,7 @@ async function main() {
   await registerYieldRoutes(app);
   await registerBillRoutes(app);
   await registerMetricsRoutes(app);
+  await registerComplianceRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
 }
