@@ -51,6 +51,8 @@ export type TxStatus =
   | "REFUNDED"
   | "FAILED";
 
+export type CostComponent = { component: string; bps: number; inr: number };
+
 export type RoutePlan = {
   source_asset: Asset;
   source_chain: Chain;
@@ -59,6 +61,7 @@ export type RoutePlan = {
   total_fee_bps: number;
   tds_inr: number;
   amount_inr: number;
+  cost_breakdown: CostComponent[];
 };
 
 export type RouteStep =
