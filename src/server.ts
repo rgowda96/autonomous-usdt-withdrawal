@@ -17,6 +17,8 @@ import { startDailyYieldSnapshot } from "./services/yield.js";
 import { registerBillRoutes } from "./routes/bills.js";
 import { seedBillers } from "./services/billers.js";
 import { startMandateExecutor } from "./services/mandates.js";
+import { registerMetricsRoutes } from "./routes/metrics.js";
+import { installTracing } from "./services/tracing.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
@@ -33,6 +35,9 @@ async function main() {
 
   // CORS — mobile app (Expo) and any local web demo
   await app.register(cors, { origin: true });
+
+  // Tracing + metrics middleware (must be early so all routes get measured)
+  installTracing(app);
 
   // Initialize DB at boot
   db();
@@ -59,6 +64,7 @@ async function main() {
   await registerIntentRoutes(app);
   await registerYieldRoutes(app);
   await registerBillRoutes(app);
+  await registerMetricsRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
 }
