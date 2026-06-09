@@ -12,6 +12,8 @@ import { registerWalletRoutes } from "./routes/wallet.js";
 import { registerSessionKeyRoutes } from "./routes/session_keys.js";
 import { registerAgentRoutes } from "./routes/agent.js";
 import { registerIntentRoutes } from "./routes/intents.js";
+import { registerYieldRoutes } from "./routes/yield.js";
+import { startDailyYieldSnapshot } from "./services/yield.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup, startReconciliationSweeper } from "./services/sweepers.js";
@@ -36,6 +38,7 @@ async function main() {
   warmRates();
   startIdempotencyCleanup();
   startReconciliationSweeper();
+  startDailyYieldSnapshot();
 
   app.get("/healthz", async () => ({ ok: true, service: "stablepay", version: "0.0.1" }));
 
@@ -49,6 +52,7 @@ async function main() {
   await registerSessionKeyRoutes(app);
   await registerAgentRoutes(app);
   await registerIntentRoutes(app);
+  await registerYieldRoutes(app);
 
   await app.listen({ host: config.HOST, port: config.PORT });
 }
