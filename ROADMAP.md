@@ -38,7 +38,7 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 
 ## Phase B — Hardening the core
 - [x] 002.02 Add `GET /v1/transactions/:id` endpoint + full event timeline + test
-- [ ] 002.03 Add reconciliation sweeper job (orphan USDC_RECEIVED >10min → auto-refund) + test
+- [x] 002.03 Add reconciliation sweeper job (orphan USDC_RECEIVED >10min → auto-refund) + test
 - [x] 002.04 Add `/v1/users/:id/tds/summary?fy=YYYY-YY` endpoint + test
 - [x] 002.05 Add request logging middleware (redact PII)
 - [x] 002.06 Add per-user rate limit middleware + test
@@ -48,7 +48,7 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 ## Phase C — Routing engine v2
 - [x] 003.01 Replace hard-coded rates with CoinGecko fetcher + 30s cache + test
 - [ ] 003.02 Add Binance P2P spread feed; fallback to CG
-- [ ] 003.03 Quote response surfaces per-step cost breakdown
+- [x] 003.03 Quote response surfaces per-step cost breakdown
 - [ ] 003.04 `auto_tax_optimal` mode: prefer assets with unrealized losses
 - [ ] 003.05 Cost-basis ledger (FIFO)
 - [ ] 003.06 Surface tax preview in quote
@@ -79,20 +79,20 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] 015.07 Pimlico paymaster (gas sponsorship)
 
 ## Phase G — Agent surface (MCP)
-- [ ] 020.01 `packages/mcp-server` with tools: `pay_upi`, `quote_upi`, `get_balances`, `get_policy`
-- [ ] 020.02 Session-key JWT auth model
-- [ ] 020.03 `services/session_keys.ts`: create/revoke with bounds
-- [ ] 020.04 `/v1/users/:id/session-keys` CRUD endpoints + tests
-- [ ] 020.05 Per-call policy check
-- [ ] 020.06 Notifications table for agent activity
-- [ ] 020.07 E2E: 3 agent payments within bounds, 4th rejected
+- [x] 020.01 `packages/mcp-server` with tools: `pay_upi`, `quote_upi`, `get_balances`, `get_policy`
+- [x] 020.02 Session-key JWT auth model
+- [x] 020.03 `services/session_keys.ts`: create/revoke with bounds
+- [x] 020.04 `/v1/users/:id/session-keys` CRUD endpoints + tests
+- [x] 020.05 Per-call policy check
+- [x] 020.06 Notifications table for agent activity
+- [x] 020.07 E2E: 3 agent payments within bounds, 4th rejected
 
 ## Phase H — Intent gateway
-- [ ] 025.01 Normalizer: UPI deeplink → PaymentIntent
-- [ ] 025.02 Normalizer: merchant checkout POST → PaymentIntent
-- [ ] 025.03 Normalizer: agent MCP call → PaymentIntent
-- [ ] 025.04 `/v1/intents` POST → routes to quote+settle
-- [ ] 025.05 Bharat QR (EMV) support
+- [x] 025.01 Normalizer: UPI deeplink → PaymentIntent
+- [x] 025.02 Normalizer: merchant checkout POST → PaymentIntent
+- [x] 025.03 Normalizer: agent MCP call → PaymentIntent
+- [x] 025.04 `/v1/intents` POST → routes to quote+settle
+- [x] 025.05 Bharat QR (EMV) support
 
 ## Phase I — Multi-asset + bridge
 - [ ] 030.01 Solana adapter (USDC SPL devnet)
@@ -142,8 +142,8 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] 080.05 Structured logging + correlation IDs
 
 ## Phase O — Hardening
-- [ ] 090.01 Replay attack tests
-- [ ] 090.02 Intent normalizer fuzz tests
+- [x] 090.01 Replay attack tests
+- [x] 090.02 Intent normalizer fuzz tests
 - [ ] 090.03 autocannon load test
 - [ ] 090.04 Security review checklist
 - [ ] 090.05 Backup + restore drill
