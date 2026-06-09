@@ -20,6 +20,36 @@ export async function registerWalletRoutes(app: FastifyInstance) {
     return reply.send({ user_id: userId, transactions: rows });
   });
 
+  app.get("/v1/users/:userId/tds/summary", async (req, reply) => {
+    const { userId } = req.params as { userId: string };
+    const { fy } = req.query as { fy?: string };
+    const where = fy ? `WHERE user_id = ? AND fiscal_year = ?` : `WHERE user_id = ?`;
+    const args = fy ? [userId, fy] : [userId];
+    const rows = db().prepare(
+      `SELECT fiscal_year, quarter, SUM(amount_inr) AS total_inr, COUNT(*) AS tx_count, SUM(filed) AS filed_count
+       FROM tds_accruals ${where}
+       GROUP BY fiscal_year, quarter
+       ORDER BY fiscal_year DESC, quarter DESC`
+    ).all(...args) as { fiscal_year: string; quarter: string; total_inr: number; tx_count: number; filed_count: number }[];
+
+    const totalInr = rows.reduce((s, r) => s + r.total_inr, 0);
+    const txCount = rows.reduce((s, r) => s + r.tx_count, 0);
+
+    return reply.send({
+      user_id: userId,
+      filter: fy ?? "all",
+      total_inr: totalInr,
+      tx_count: txCount,
+      by_quarter: rows.map((r) => ({
+        fiscal_year: r.fiscal_year,
+        quarter: r.quarter,
+        total_inr: r.total_inr,
+        tx_count: r.tx_count,
+        filed: r.filed_count === r.tx_count, // all txns filed in this quarter
+      })),
+    });
+  });
+
   app.get("/v1/transactions/:txId", async (req, reply) => {
     const { txId } = req.params as { txId: string };
     const tx = db().prepare(
