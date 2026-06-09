@@ -12,14 +12,15 @@ import { registerWalletRoutes } from "./routes/wallet.js";
 import { startRateLimitSweeper } from "./services/rate_limit.js";
 import { warmRates } from "./services/rates.js";
 import { startIdempotencyCleanup } from "./services/sweepers.js";
+import { pinoSerializers } from "./services/logging.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function main() {
   const app = Fastify({
     logger: config.NODE_ENV === "development"
-      ? { transport: { target: "pino-pretty" } }
-      : true,
+      ? { transport: { target: "pino-pretty" }, serializers: pinoSerializers, redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-signature']"] }
+      : { serializers: pinoSerializers, redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-signature']"] },
   });
 
   // CORS — mobile app (Expo) and any local web demo
