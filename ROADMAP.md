@@ -17,14 +17,14 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] A.deploy Dockerfile + Render/Fly configs + RUN docs
 - [x] A.mobile Scaffold Expo app at `apps/mobile/` + CORS on backend; single-screen pay flow in Expo Go
 - [x] A.mobile.2 Real biometric confirm via `expo-local-authentication`
-- [ ] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
+- [x] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
 - [x] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
 - [x] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
 - [x] A.mobile.6 Empty-state + onboarding screens
 - [x] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
 - [x] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
 - [x] A.mobile.9 Recent payees autocomplete
-- [ ] A.mobile.10 Android UPI deeplink intent filter (requires EAS Build, not Expo Go)
+- [x] A.mobile.10 Android UPI deeplink intent filter (requires EAS Build, not Expo Go)
 - [x] A.01.fix Followups from code-review on A.01 (web demo): copy `src/public/*` to `dist/`, extract shared `seedDemoUser(conn)`, replace innerHTML in tx list, use `crypto.randomUUID()`, upgrade `test/demo_page.test.ts` to boot fastify + GET /.
 - [x] A.02 Pre-seed demo user on first server boot so the demo page just works
 - [x] A.03 Add a "Recent transactions" list panel on the demo page

@@ -7,9 +7,26 @@ Loop MUST update this file every tick before exiting.
 
 ## Cursor
 
-Next task to attempt: **002.03** (reconciliation sweeper for orphan USDC_RECEIVED rows)
+**HALT — ROADMAP EXHAUSTED**
 
-Last completed: **002.05 — PII-redacted request logging** (PR #18)
+All `[ ]` items have been shipped or marked `[B]`. Loop has reached its
+terminal state per CLAUDE.md "Done state". Last completed: A.mobile.3 +
+A.mobile.10 (real expo-camera QR scanner) in PR #41.
+
+Remaining `[B]` items require human credentials / agreements and are
+listed below — supply each and the loop can resume against them:
+
+1. **010.01 Onmeta sandbox** — signup + KYB at onmeta.in; set ONMETA_API_KEY + ONMETA_BASE_URL + ONMETA_WEBHOOK_SECRET in `.env`.
+2. **015.01 Pimlico API key** — pimlico.io free tier; set PIMLICO_API_KEY.
+3. **015.02 Privy app credentials** — privy.io; set EXPO_PUBLIC_PRIVY_APP_ID.
+4. **050.02 Apple Developer + Google Play accounts** — paid; required for native build distribution.
+5. **070.02 Sumsub production credentials** — partnership + KYB; set SUMSUB_TOKEN.
+6. **100.01 VASP registration with FIU-IND** — regulatory, weeks-months.
+7. **100.02 PA partnership** — Razorpay or Cashfree agreement.
+8. **100.03 Production Postgres + Redis** — provision managed instances; set DATABASE_URL=postgres://...
+
+When any credential lands, edit STATE.md / push, and the next loop tick
+picks up the corresponding task.
 
 ## Priority rules
 
@@ -21,6 +38,29 @@ Last completed: **002.05 — PII-redacted request logging** (PR #18)
 
 - 2026-06-08 — A.01 — PR #1 merged. First full autonomous tick under multi-agent protocol: Builder (HTML+server+test) → CI green → Code Reviewer (6 findings, 1 HIGH) → Fix on task branch → re-CI green → Merger squash-merged. 8/8 tests green. 5 follow-up cleanup tasks logged as A.01.fix.
 - 2026-06-08 — autonomy/mission upgrade — shipped MISSION.md (north-star, immutable), AGENTS.md (crew roster: Orchestrator, Mission Guardian, Architect, Builder, Code Reviewer, Security Reviewer, Product Listener, Merger, Loop Doctor), updated CLAUDE.md to require Mission Guardian gates at both task-selection and pre-merge.
+- 2026-06-10 — A.mobile.3 + A.mobile.10 — expo-camera QR scanner, intent filter. PR #41. 159/159 green.
+- 2026-06-10 — 015.05/07 + 050.01/04/08/09 — Base Sepolia broadcast stub, Privy scaffold, UPI deeplink parser + listener, Maestro E2E. PR #40. 156/156 green.
+- 2026-06-10 — 015.06 + 035.01 + 004.02-05 — deposit watcher + Aave V3 adapter + Postgres scaffold + idempotency_keys table. PR #39. 152/152 green.
+- 2026-06-10 — 080.01/03/04 + 010.06 — OTel facade + Grafana JSON + SLO defs + Onmeta recon job. PR #38. 146/146 green.
+- 2026-06-10 — 050.07 + A.09 + A.10 — mobile Agents tab (session-key manager). PR #37. 139/139 green.
+- 2026-06-10 — A.01.fix + A.04-A.08 — web demo polish (shared seedDemoUser, crypto.randomUUID, dist build, asset selector, sim webhook button, mobile-responsive). PR #36. 139/139 green.
+- 2026-06-10 — A.mobile.6 + A.mobile.7 — 4-slide onboarding + India-compliance copy. PR #35. 137/137 green.
+- 2026-06-10 — 003.02 + 003.04 + 003.07 — Binance P2P feed + auto_tax_optimal + per-venue slippage. PR #34. 137/137 green.
+- 2026-06-10 — 004.01 — Drizzle ORM schema mirror. PR #33. 132/132 green.
+- 2026-06-09 — 003.05 + 003.06 — FIFO cost-basis ledger + tax preview in quote. PR #32. 132/132 green.
+- 2026-06-09 — A.mobile.5 + 100.06 — asset picker on PayReview + beta invite codes. PR #31. 127/127 green.
+- 2026-06-09 — 030.* + 015.03-04 + 035.01 — chain adapters + smart wallet stub. PR #30. 122/122 green.
+- 2026-06-09 — 090.03-05 + 100.04-05 — load test + backup/restore + security checklist + deploy + runbook. PR #29. 114/114 green.
+- 2026-06-09 — 010.02 + 010.03 + 010.05 — Onmeta adapter + HMAC webhook + fallback chain. PR #28. 114/114 green.
+- 2026-06-09 — 070.* — compliance pipeline (KYC + KYT + auto-freeze + FIU-IND CSV). PR #27. 109/109 green.
+- 2026-06-09 — 080.02 + 080.05 — Prometheus /metrics + correlation IDs. PR #26. 101/101 green.
+- 2026-06-09 — 040.* — bills + mandates (BBPS catalogue + executor + revoke). PR #25. 98/98 green.
+- 2026-06-09 — 035.* — yield-while-idle (Aave-stub). PR #24. 93/93 green.
+- 2026-06-09 — 090.01 + 090.02 — replay attack tests + intent fuzz tests. PR #23. 86/86 green.
+- 2026-06-09 — 025.* — Intent gateway (UPI deeplinks / Bharat QR / checkout). PR #22. 49/49 green.
+- 2026-06-09 — 020.* — agent surface (session keys + /v1/agent/pay-upi + MCP server). PR #21. 39/39 green.
+- 2026-06-09 — 003.03 — per-step cost breakdown in quote. PR #20. 32/32 green.
+- 2026-06-09 — 002.03 — reconciliation sweeper for orphan USDC_RECEIVED. PR #19. 30/30 green.
 - 2026-06-09 — 002.05 — PII-redactor + pino serializers; masks auth_proof, signatures, VPAs to `xx***@bank`. PR #18. 29/29 green.
 - 2026-06-09 — 002.07 — idempotency-key TTL cleanup (24h key rotate, 90d row purge). PR #17. 24/24 green.
 - 2026-06-09 — 003.01 — live INR rates via CoinGecko + 30s cache + fallback. PR #16. 23/23 green.
