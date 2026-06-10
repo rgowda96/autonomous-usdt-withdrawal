@@ -73,19 +73,9 @@ async function main() {
   await app.listen({ host: config.HOST, port: config.PORT });
 }
 
+import { seedDemoUser } from "./services/demo_seed.js";
 function ensureDemoUser() {
-  const userId = "user_demo_1";
-  const conn = db();
-  conn.transaction(() => {
-    conn.prepare(`INSERT OR IGNORE INTO users (id, created_at, kyc_status) VALUES (?, ?, ?)`)
-      .run(userId, now(), "approved");
-    const ins = conn.prepare(
-      `INSERT OR IGNORE INTO balances (user_id, asset, chain, amount, updated_at) VALUES (?, ?, ?, ?, ?)`
-    );
-    ins.run(userId, "USDC", "base", "1000.000000", now());
-    ins.run(userId, "USDT", "tron", "500.000000", now());
-    ins.run(userId, "INR_CREDIT", "internal", "2000.00", now());
-  })();
+  seedDemoUser(db());
 }
 
 main().catch((err) => {

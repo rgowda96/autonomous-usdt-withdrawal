@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>StablePay Demo</title>
+<title>StablePay backend debug</title>
 <style>
   :root {
     --bg: #0b0d12;
@@ -11,6 +11,7 @@
     --border: #232838;
     --text: #e6e8ee;
     --muted: #8a92a6;
+    --faint: #5a627a;
     --accent: #4f8cff;
     --ok: #2ecc71;
     --warn: #e8b500;
@@ -20,13 +21,20 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, sans-serif; }
   .wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
-  h1 { font-size: 22px; margin: 0 0 6px; }
+  @media (max-width: 600px) {
+    .wrap { margin: 16px auto; padding: 0 12px; }
+    h1 { font-size: 19px !important; }
+    .row { flex-direction: column; }
+    .row > button { width: 100%; }
+  }
+  h1 { font-size: 22px; margin: 0 0 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .tag { font-size: 11px; color: var(--warn); font-weight: 700; padding: 2px 8px; border: 1px solid var(--warn); border-radius: 12px; }
   .sub { color: var(--muted); margin: 0 0 24px; font-size: 13px; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
   .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 12px; }
   label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
-  input { width: 100%; padding: 10px 12px; background: #0b0d12; border: 1px solid var(--border); border-radius: 8px; color: var(--text); font: inherit; }
-  input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  input, select { width: 100%; padding: 10px 12px; background: #0b0d12; border: 1px solid var(--border); border-radius: 8px; color: var(--text); font: inherit; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
   button { padding: 10px 14px; border: none; border-radius: 8px; background: var(--accent); color: white; font: inherit; cursor: pointer; }
   button:hover { filter: brightness(1.1); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -37,26 +45,40 @@
   .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-family: var(--mono); font-size: 13px; }
   .kv dt { color: var(--muted); }
   .kv dd { margin: 0; }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
   .pill.ok { background: rgba(46,204,113,0.15); color: var(--ok); }
   .pill.warn { background: rgba(232,181,0,0.15); color: var(--warn); }
   .pill.err { background: rgba(255,93,108,0.15); color: var(--err); }
   pre { font: 12px/1.5 var(--mono); background: #0b0d12; border: 1px solid var(--border); border-radius: 8px; padding: 10px; overflow: auto; max-height: 240px; }
-  .empty { color: var(--muted); font-style: italic; font-size: 13px; }
+  .empty { color: var(--faint); font-style: italic; font-size: 13px; }
   .hidden { display: none !important; }
+  .breakdown { margin-top: 12px; padding-left: 12px; border-left: 2px solid var(--border); }
+  .breakdown-row { display: flex; justify-content: space-between; padding: 3px 0; font-family: var(--mono); font-size: 11px; }
+  .breakdown-row .k { color: var(--faint); }
+  .breakdown-row .v { color: var(--muted); }
+  .err-banner { background: rgba(255,93,108,0.10); border-left: 3px solid var(--err); padding: 10px 12px; border-radius: 6px; margin: 12px 0; color: var(--err); font-size: 13px; }
+  .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>StablePay <span style="font-size:12px; color:var(--warn); font-weight:normal; vertical-align:middle; margin-left:8px; padding:2px 8px; border:1px solid var(--warn); border-radius:12px;">BACKEND DEBUG</span></h1>
-  <p class="sub">This is the backend dev page. The real product is the <strong>mobile app</strong> in <code>apps/mobile/</code> (Expo Go). This page just lets the backend be exercised from a desktop browser.</p>
+  <h1>StablePay <span class="tag">BACKEND DEBUG</span></h1>
+  <p class="sub">This is the dev page. The real product is the <strong>mobile app</strong> in <code>apps/mobile/</code> (Expo Go). This page just exercises the backend from a desktop browser.</p>
 
   <div class="card" id="card-scan">
     <h2>1. Scan a UPI QR (paste VPA)</h2>
     <label for="vpa">Payee VPA</label>
-    <input id="vpa" type="text" placeholder="swiggy@hdfc" value="swiggy@hdfc" />
+    <input id="vpa" type="text" placeholder="swiggy@hdfc" value="swiggy@hdfc" autocomplete="off" />
     <label for="amount">Amount (INR)</label>
     <input id="amount" type="number" min="1" placeholder="500" value="500" />
+    <label for="asset">Pay from</label>
+    <select id="asset">
+      <option value="auto_cheapest">Auto · cheapest</option>
+      <option value="USDC:base">USDC on Base</option>
+      <option value="USDT:tron">USDT on Tron</option>
+      <option value="INR_CREDIT:internal">INR credit</option>
+    </select>
     <div style="height: 12px"></div>
     <div class="row">
       <button id="btn-quote">Get quote</button>
@@ -65,7 +87,10 @@
 
   <div class="card hidden" id="card-quote">
     <h2>2. Quote</h2>
+    <div id="quote-loading" class="hidden"><span class="spin"></span>Pricing…</div>
     <dl class="kv" id="quote-kv"></dl>
+    <div id="breakdown" class="breakdown hidden"></div>
+    <div id="quote-err" class="err-banner hidden"></div>
     <div style="height: 12px"></div>
     <div class="row">
       <button id="btn-confirm">Confirm with FaceID (mock)</button>
@@ -80,6 +105,7 @@
     <dl class="kv" id="result-kv"></dl>
     <div style="height: 12px"></div>
     <div class="row">
+      <button id="btn-simulate" class="secondary">Simulate off-ramp success</button>
       <button id="btn-restart" class="secondary">Start a new payment</button>
     </div>
   </div>
@@ -98,22 +124,18 @@
 <script>
 const userId = "user_demo_1";
 const $ = (sel) => document.querySelector(sel);
-const debug = $("#debug");
+const debugPre = $("#debug");
 let currentQuote = null;
 let currentTx = null;
 
-function uuid() {
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
-}
+const uuid = () => crypto.randomUUID();
 
 function show(id) { $(id).classList.remove("hidden"); }
 function hide(id) { $(id).classList.add("hidden"); }
 
 function setKv(id, pairs) {
   const dl = $(id);
-  dl.innerHTML = "";
+  dl.replaceChildren();
   for (const [k, v] of pairs) {
     const dt = document.createElement("dt"); dt.textContent = k;
     const dd = document.createElement("dd"); dd.textContent = v;
@@ -121,22 +143,53 @@ function setKv(id, pairs) {
   }
 }
 
-async function api(method, path, body) {
+function renderBreakdown(items) {
+  const el = $("#breakdown");
+  el.replaceChildren();
+  for (const c of items) {
+    const row = document.createElement("div"); row.className = "breakdown-row";
+    const k = document.createElement("span"); k.className = "k"; k.textContent = c.component;
+    const v = document.createElement("span"); v.className = "v";
+    v.textContent = `${(c.bps / 100).toFixed(2)}% · ₹${c.inr}`;
+    row.append(k, v);
+    el.append(row);
+  }
+  el.classList.remove("hidden");
+}
+
+async function api(method, path, body, extraHeaders) {
   const res = await fetch(path, {
     method,
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...(extraHeaders ?? {}) },
     body: body ? JSON.stringify(body) : undefined,
   });
-  const json = await res.json();
-  debug.textContent = JSON.stringify({ [method + " " + path]: json }, null, 2);
-  if (!res.ok) throw new Error(json.error || res.statusText);
+  let json = null;
+  try { json = await res.json(); } catch { /* non-JSON ok */ }
+  debugPre.textContent = JSON.stringify({ [method + " " + path]: json ?? `(status ${res.status})` }, null, 2);
+  if (!res.ok) throw new Error((json && json.error) || res.statusText);
   return json;
+}
+
+function getAssetPreference() {
+  const v = $("#asset").value;
+  if (v === "auto_cheapest") return "auto_cheapest";
+  const [asset, chain] = v.split(":");
+  return { asset, chain };
 }
 
 $("#btn-quote").addEventListener("click", async () => {
   const vpa = $("#vpa").value.trim();
   const amount = parseInt($("#amount").value, 10);
-  if (!vpa || !amount) return alert("Need VPA and amount");
+  hide("#breakdown");
+  hide("#quote-err");
+  setKv("#quote-kv", []);
+  if (!vpa || !amount) {
+    $("#quote-err").textContent = "Need VPA and amount";
+    show("#quote-err"); show("#card-quote");
+    return;
+  }
+  show("#card-quote");
+  show("#quote-loading");
   try {
     const q = await api("POST", "/v1/quote", {
       idempotency_key: uuid(),
@@ -144,7 +197,7 @@ $("#btn-quote").addEventListener("click", async () => {
       payee: { type: "vpa", identifier: vpa, display_name: vpa.split("@")[0] },
       amount_inr: amount,
       channel: "qr",
-      asset_preference: "auto_cheapest",
+      asset_preference: getAssetPreference(),
     });
     currentQuote = q;
     const expiresIn = Math.max(0, Math.round((q.expires_at - Date.now()) / 1000));
@@ -156,12 +209,16 @@ $("#btn-quote").addEventListener("click", async () => {
       ["Rate", `Rs ${parseFloat(q.rate_inr_per_unit).toFixed(2)} per ${q.source_asset}`],
       ["Fee", `${(q.total_fee_bps / 100).toFixed(2)}%`],
       ["TDS (1%)", `Rs ${q.tds_inr}`],
+      ...(q.tax_preview ? [["Est. cap-gain tax", `Rs ${q.tax_preview.estimated_tax_inr} (30% of Rs ${q.tax_preview.estimated_gain_inr})`]] : []),
       ["Quote expires in", `${expiresIn}s`],
       ["Quote ID", q.quote_id],
     ]);
-    show("#card-quote");
+    if (Array.isArray(q.cost_breakdown)) renderBreakdown(q.cost_breakdown);
   } catch (e) {
-    alert("Quote failed: " + e.message);
+    $("#quote-err").textContent = "Quote failed: " + e.message;
+    show("#quote-err");
+  } finally {
+    hide("#quote-loading");
   }
 });
 
@@ -180,7 +237,9 @@ $("#btn-confirm").addEventListener("click", async () => {
     });
     currentTx = s;
     const pill = $("#status-pill");
-    pill.innerHTML = `<span class="pill warn">${s.status}</span>`;
+    pill.replaceChildren();
+    const span = document.createElement("span"); span.className = "pill warn"; span.textContent = s.status;
+    pill.append(span);
     setKv("#result-kv", [
       ["Transaction ID", s.transaction_id],
       ["Status", s.status],
@@ -190,33 +249,33 @@ $("#btn-confirm").addEventListener("click", async () => {
     hide("#card-quote");
     show("#card-result");
     refreshTxList();
-    // Simulate the off-ramp partner reporting success after 1.5s for the demo
-    setTimeout(simulateWebhook, 1500);
   } catch (e) {
-    alert("Settle failed: " + e.message);
+    $("#quote-err").textContent = "Settle failed: " + e.message;
+    show("#quote-err");
   }
 });
 
 async function simulateWebhook() {
   if (!currentQuote || !currentTx) return;
   try {
-    await fetch("/v1/webhooks/offramp", {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-signature": "devsecret" },
-      body: JSON.stringify({
-        event_id: "evt_" + uuid(),
-        event_type: "PAYOUT_SUCCESS",
-        client_ref: currentQuote.quote_id,
-        provider_ref: currentTx.offramp_ref,
-        utr: "UTR" + Math.floor(Math.random() * 1e9).toString().padStart(9, "0"),
-      }),
-    });
-    $("#status-pill").innerHTML = `<span class="pill ok">SETTLED</span>`;
+    await api("POST", "/v1/webhooks/offramp", {
+      event_id: "evt_" + uuid(),
+      event_type: "PAYOUT_SUCCESS",
+      client_ref: currentQuote.quote_id,
+      provider_ref: currentTx.offramp_ref,
+      utr: "UTR" + Math.floor(Math.random() * 1e9).toString().padStart(9, "0"),
+    }, { "x-signature": "devsecret" });
+    const pill = $("#status-pill");
+    pill.replaceChildren();
+    const span = document.createElement("span"); span.className = "pill ok"; span.textContent = "SETTLED";
+    pill.append(span);
     setTimeout(refreshTxList, 200);
-  } catch {
+  } catch (e) {
     // ignore in demo
   }
 }
+
+$("#btn-simulate").addEventListener("click", simulateWebhook);
 
 $("#btn-restart").addEventListener("click", () => {
   currentQuote = null;
@@ -230,23 +289,26 @@ async function refreshTxList() {
     const r = await api("GET", `/v1/users/${userId}/transactions`);
     const list = r.transactions ?? [];
     const el = $("#tx-list");
+    el.replaceChildren();
     if (list.length === 0) {
       el.className = "empty";
       el.textContent = "No transactions yet.";
       return;
     }
     el.className = "";
-    el.innerHTML = "";
     for (const tx of list.slice(0, 8)) {
-      const div = document.createElement("div");
-      div.style.cssText = "padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 12px;";
+      const row = document.createElement("div");
+      row.style.cssText = "padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; font-family: var(--mono); font-size: 12px;";
       const left = document.createElement("div");
-      left.innerHTML = `Rs ${tx.amount_inr} <span style="color:var(--muted)">via ${tx.source_asset}</span>`;
+      const amount = document.createElement("span"); amount.textContent = `Rs ${tx.amount_inr}`;
+      const meta = document.createElement("span"); meta.style.color = "var(--muted)"; meta.textContent = ` via ${tx.source_asset}`;
+      left.append(amount, meta);
       const right = document.createElement("div");
-      const cls = tx.status === "SETTLED" ? "ok" : tx.status.includes("REFUND") || tx.status === "FAILED" ? "err" : "warn";
-      right.innerHTML = `<span class="pill ${cls}">${tx.status}</span>`;
-      div.append(left, right);
-      el.append(div);
+      const cls = tx.status === "SETTLED" ? "ok" : (tx.status.includes("REFUND") || tx.status === "FAILED") ? "err" : "warn";
+      const pill = document.createElement("span"); pill.className = `pill ${cls}`; pill.textContent = tx.status;
+      right.append(pill);
+      row.append(left, right);
+      el.append(row);
     }
   } catch {
     // demo, ignore
