@@ -1,6 +1,8 @@
 import type { Asset, AssetPreference, Chain, CostComponent, RoutePlan, RouteStep } from "../types.js";
 import { quoteRate } from "./rates.js";
 import { config } from "../config.js";
+import { bestVenue } from "./slippage.js";
+import { db } from "../db/index.js";
 
 type Holding = { asset: Asset; chain: Chain; amount: number };
 
@@ -19,6 +21,7 @@ export function planRoute(
   amountInr: number,
   preference: AssetPreference,
   vpa: string,
+  userId?: string,
 ): RoutePlan {
   const candidates: Scored[] = [];
 
@@ -44,7 +47,34 @@ export function planRoute(
 
   // Pick cheapest by total cost (fee + tax drag)
   candidates.sort((a, b) => a.score - b.score);
+
+  // auto_tax_optimal mode: among candidates, prefer the asset with the
+  // largest unrealized loss to harvest. Only kicks in when at least one
+  // candidate has cost-basis data showing a loss > spread noise.
+  if (preference === "auto_tax_optimal" && userId) {
+    const LOSS_THRESHOLD_INR = 100; // ignore sub-₹100 losses (spread noise)
+    const withGain = candidates.map((c) => ({ c, gain: estimateGainInr(userId, c.plan) }));
+    withGain.sort((a, b) => a.gain - b.gain); // most-negative first
+    const taxOptimal = withGain[0];
+    if (taxOptimal && taxOptimal.gain < -LOSS_THRESHOLD_INR) return taxOptimal.c.plan;
+  }
+
   return candidates[0]!.plan;
+}
+
+// Returns the estimated realized gain in INR (proceeds - cost basis at avg cost).
+// Negative = loss. 0 if no cost-basis data or asset is INR_CREDIT.
+function estimateGainInr(userId: string, plan: RoutePlan): number {
+  if (plan.source_asset === "INR_CREDIT") return 0;
+  const row = db().prepare(
+    `SELECT AVG(CAST(cost_inr_per_unit AS REAL)) AS avg_cost
+     FROM cost_basis_lots
+     WHERE user_id = ? AND asset = ? AND chain = ? AND CAST(remaining_quantity AS REAL) > 0`
+  ).get(userId, plan.source_asset, plan.source_chain) as { avg_cost: number | null };
+  if (!row.avg_cost) return 0;
+  const qty = parseFloat(plan.source_amount);
+  const costBasis = qty * row.avg_cost;
+  return plan.amount_inr - costBasis;
 }
 
 function buildPlan(h: Holding, amountInr: number, vpa: string): Scored {
@@ -68,9 +98,10 @@ function buildPlan(h: Holding, amountInr: number, vpa: string): Scored {
 
   // Swap to USDC if not already a stable
   if (h.asset !== "USDC" && h.asset !== "USDT" && h.asset !== "INR_CREDIT") {
-    steps.push({ kind: "swap", from: h.asset, to: "USDC", venue: "1inch", est_slippage_bps: SWAP_BPS[h.asset] });
-    feeBps += SWAP_BPS[h.asset];
-    breakdown.push({ component: `Swap ${h.asset}->USDC`, bps: SWAP_BPS[h.asset], inr: inrFor(SWAP_BPS[h.asset]) });
+    const picked = bestVenue(h.asset, amountInr);
+    steps.push({ kind: "swap", from: h.asset, to: "USDC", venue: picked.venue, est_slippage_bps: picked.est_bps });
+    feeBps += picked.est_bps;
+    breakdown.push({ component: `Swap ${h.asset}->USDC (${picked.venue})`, bps: picked.est_bps, inr: inrFor(picked.est_bps) });
   }
 
   // Off-ramp (skip if INR_CREDIT already INR)

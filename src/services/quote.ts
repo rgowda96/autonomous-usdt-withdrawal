@@ -36,7 +36,7 @@ export function createQuote(req: QuoteRequest): QuoteRecord {
   const holdingsParsed = holdings.map((h) => ({ asset: h.asset, chain: h.chain, amount: Number(h.amount) }));
 
   const vpa = req.payee.type === "vpa" ? req.payee.identifier : `agent:${req.payee.identifier}`;
-  const plan = planRoute(holdingsParsed, req.amount_inr, req.asset_preference, vpa);
+  const plan = planRoute(holdingsParsed, req.amount_inr, req.asset_preference, vpa, req.user_id);
   const rate = quoteRate(plan.source_asset, config.SPREAD_BPS);
 
   const id = `q_${randomUUID()}`;
