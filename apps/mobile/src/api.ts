@@ -88,9 +88,10 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     headers: { "content-type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
-  const json = await res.json();
+  let json: any = null;
+  try { json = await res.json(); } catch { /* non-JSON */ }
   if (!res.ok) throw new Error((json && json.error) || `HTTP ${res.status}`);
-  return json as T;
+  return (json ?? {}) as T;
 }
 
 export const api = {
@@ -134,4 +135,22 @@ export const api = {
       `/v1/users/${DEMO_USER_ID}/transactions`
     ),
   transaction: (id: string) => request<TransactionDetail>("GET", `/v1/transactions/${id}`),
+  sessionKeys: () =>
+    request<{ user_id: string; session_keys: SessionKey[] }>("GET", `/v1/users/${DEMO_USER_ID}/session-keys`),
+  createSessionKey: (body: { label: string; daily_cap_inr: number; per_txn_cap_inr: number; vpa_allowlist?: string[]; ttl_days?: number }) =>
+    request<SessionKey & { token: string }>("POST", `/v1/users/${DEMO_USER_ID}/session-keys`, body),
+  revokeSessionKey: (id: string) =>
+    request<{ ok: boolean }>("DELETE", `/v1/users/${DEMO_USER_ID}/session-keys/${id}`),
+};
+
+export type SessionKey = {
+  id: string;
+  user_id: string;
+  label: string;
+  daily_cap_inr: number;
+  per_txn_cap_inr: number;
+  vpa_allowlist: string[] | null;
+  expires_at: number;
+  revoked_at: number | null;
+  created_at: number;
 };

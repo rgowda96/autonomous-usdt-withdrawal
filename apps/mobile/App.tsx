@@ -17,6 +17,7 @@ import { PaySuccessScreen } from "./src/screens/PaySuccessScreen";
 import { HistoryListScreen } from "./src/screens/HistoryScreen";
 import { TxDetailScreen } from "./src/screens/TxDetailScreen";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
+import { AgentsScreen } from "./src/screens/AgentsScreen";
 import { theme } from "./src/theme";
 import type { HistoryStackParamList, PayFlowParamList, RootTabsParamList } from "./src/navigation";
 
@@ -117,6 +118,11 @@ export default function App() {
               name="History"
               component={HistoryNavigator}
               options={{ tabBarIcon: ({ focused }) => <TabIcon label="📜" focused={focused} /> }}
+            />
+            <Tabs.Screen
+              name="Agents"
+              component={AgentsScreen}
+              options={{ tabBarIcon: ({ focused }) => <TabIcon label="🤖" focused={focused} /> }}
             />
             <Tabs.Screen
               name="Settings"
