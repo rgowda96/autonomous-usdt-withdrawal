@@ -3,7 +3,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const KEYS = {
   apiBaseUrl: "stablepay.apiBaseUrl",
   recentPayees: "stablepay.recentPayees",
+  onboardDone: "stablepay.onboardDone",
 } as const;
+
+export async function isOnboardDone(): Promise<boolean> {
+  try { return (await AsyncStorage.getItem(KEYS.onboardDone)) === "1"; } catch { return false; }
+}
+export async function markOnboardDone(): Promise<void> {
+  try { await AsyncStorage.setItem(KEYS.onboardDone, "1"); } catch {}
+}
 
 export async function getStoredApiBaseUrl(): Promise<string | null> {
   try { return await AsyncStorage.getItem(KEYS.apiBaseUrl); } catch { return null; }

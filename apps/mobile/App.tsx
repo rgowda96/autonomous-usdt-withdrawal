@@ -5,6 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { initBaseUrl } from "./src/api";
+import { isOnboardDone, markOnboardDone } from "./src/storage";
+import { OnboardScreen } from "./src/screens/OnboardScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ConnectionBanner } from "./src/components/ConnectionBanner";
@@ -64,8 +66,22 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 
 export default function App() {
   const [ready, setReady] = useState(false);
-  useEffect(() => { initBaseUrl().finally(() => setReady(true)); }, []);
+  const [needsOnboard, setNeedsOnboard] = useState(false);
+  useEffect(() => {
+    Promise.all([initBaseUrl(), isOnboardDone()]).then(([_, done]) => {
+      setNeedsOnboard(!done);
+      setReady(true);
+    });
+  }, []);
+  const finishOnboard = () => { markOnboardDone(); setNeedsOnboard(false); };
   if (!ready) return null;
+  if (needsOnboard) {
+    return (
+      <SafeAreaProvider>
+        <OnboardScreen onDone={finishOnboard} />
+      </SafeAreaProvider>
+    );
+  }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
