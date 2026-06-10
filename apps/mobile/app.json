@@ -6,15 +6,33 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "scheme": "stablepay",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "io.stablepay.app"
+      "bundleIdentifier": "io.stablepay.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["upi"],
+        "CFBundleURLTypes": [
+          { "CFBundleURLSchemes": ["upi", "stablepay"] }
+        ]
+      }
     },
     "android": {
       "package": "io.stablepay.app",
-      "adaptiveIcon": {
-        "backgroundColor": "#0b0d12"
-      }
+      "adaptiveIcon": { "backgroundColor": "#0b0d12" },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [{ "scheme": "upi", "host": "pay" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "data": [{ "scheme": "stablepay" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

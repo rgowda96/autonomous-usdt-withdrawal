@@ -1,0 +1,61 @@
+appId: io.stablepay.app
+---
+- launchApp
+# Onboarding (4 slides) -> tap through to Get started
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Get started"
+
+# Home should show total balance and asset cards
+- assertVisible: "Total balance"
+- assertVisible: "USDC"
+- assertVisible: "INR_CREDIT"
+
+# Tap Pay CTA -> PayEnter screen
+- tapOn:
+    text: "Pay"
+- assertVisible: "Pay to"
+
+# Defaults are pre-filled (swiggy@hdfc, 500)
+- tapOn:
+    text: "Continue"
+- assertVisible: "Review"
+- assertVisible: "swiggy@hdfc"
+- assertVisible: "Payment breakdown"
+
+# Confirm with biometric -> success screen
+- tapOn:
+    text: "Confirm with"
+# Bio prompt is OS-level; Maestro stubs default-accept in test mode
+- assertVisible: "Paid"
+
+# Back to Home -> tap History
+- tapOn:
+    text: "Done"
+- tapOn:
+    text: "History"
+- assertVisible: "−₹500"
+
+# Tap into tx detail
+- tapOn:
+    text: "−₹500"
+- assertVisible: "Settlement refs"
+- assertVisible: "Timeline"
+
+# Back -> Agents tab -> verify new key flow renders
+- tapOn:
+    text: "Back"
+- tapOn:
+    text: "Agents"
+- assertVisible: "New session key"
+
+# Settings tab -> verify backend URL field
+- tapOn:
+    text: "Settings"
+- assertVisible: "API base URL"
+- assertVisible: "India compliance"

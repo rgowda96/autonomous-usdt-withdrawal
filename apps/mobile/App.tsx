@@ -2,11 +2,13 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Linking, Text, View } from "react-native";
 import { initBaseUrl } from "./src/api";
 import { isOnboardDone, markOnboardDone } from "./src/storage";
 import { OnboardScreen } from "./src/screens/OnboardScreen";
+import { isUpiDeeplink, parseUpiDeeplink } from "./src/upi";
+import type { NavigationContainerRef } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ConnectionBanner } from "./src/components/ConnectionBanner";
@@ -68,12 +70,37 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 export default function App() {
   const [ready, setReady] = useState(false);
   const [needsOnboard, setNeedsOnboard] = useState(false);
+  const navRef = useRef<NavigationContainerRef<RootTabsParamList>>(null);
+
   useEffect(() => {
     Promise.all([initBaseUrl(), isOnboardDone()]).then(([_, done]) => {
       setNeedsOnboard(!done);
       setReady(true);
     });
   }, []);
+
+  // UPI deeplink handler: when the OS hands us a upi:// URL, jump into the
+  // Pay flow at the Review step (if amount included) or Enter step otherwise.
+  useEffect(() => {
+    const handle = (url: string | null) => {
+      if (!url || !isUpiDeeplink(url)) return;
+      try {
+        const upi = parseUpiDeeplink(url);
+        if (!navRef.current) return;
+        if (upi.amount_inr) {
+          navRef.current.navigate("PayFlow", { screen: "PayReview", params: { vpa: upi.vpa, amountInr: upi.amount_inr } });
+        } else {
+          navRef.current.navigate("PayFlow", { screen: "PayEnter" });
+        }
+      } catch {
+        // Bad deeplink; ignore.
+      }
+    };
+    Linking.getInitialURL().then(handle).catch(() => {});
+    const sub = Linking.addEventListener("url", (e) => handle(e.url));
+    return () => sub.remove();
+  }, []);
+
   const finishOnboard = () => { markOnboardDone(); setNeedsOnboard(false); };
   if (!ready) return null;
   if (needsOnboard) {
@@ -86,7 +113,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <NavigationContainer theme={navTheme}>
+        <NavigationContainer ref={navRef} theme={navTheme}>
           <ConnectionBanner />
           <Tabs.Navigator
             screenOptions={{
