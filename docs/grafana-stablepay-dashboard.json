@@ -1,0 +1,92 @@
+{
+  "title": "StablePay",
+  "schemaVersion": 39,
+  "tags": ["stablepay", "fintech"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Settlement requests per minute",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(stablepay_settlement_total[5m])) by (source_asset)",
+          "legendFormat": "{{source_asset}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Settled INR per minute",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(stablepay_settlement_inr_total[5m])) by (source_asset)",
+          "legendFormat": "{{source_asset}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "p50 / p95 / p99 quote latency",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_ms_bucket{route=\"/v1/quote\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_ms_bucket{route=\"/v1/quote\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_ms_bucket{route=\"/v1/quote\"}[5m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "p50 / p95 / p99 settle latency",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_ms_bucket{route=\"/v1/settle\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_ms_bucket{route=\"/v1/settle\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_ms_bucket{route=\"/v1/settle\"}[5m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Error rate (5xx %)",
+      "gridPos": { "x": 0, "y": 16, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_requests_total{code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "TDS accrued (INR/min)",
+      "gridPos": { "x": 6, "y": 16, "w": 6, "h": 6 },
+      "targets": [{ "expr": "sum(rate(stablepay_tds_inr_total[5m]))" }]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Active requests (last 5m)",
+      "gridPos": { "x": 12, "y": 16, "w": 6, "h": 6 },
+      "targets": [{ "expr": "sum(rate(http_requests_total[5m])) * 300" }]
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Successful settlement %",
+      "gridPos": { "x": 18, "y": 16, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_requests_total{route=\"/v1/settle\",code=~\"2..\"}[10m])) / sum(rate(http_requests_total{route=\"/v1/settle\"}[10m]))"
+        }
+      ]
+    }
+  ]
+}
