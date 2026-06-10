@@ -16,6 +16,7 @@ import { HomeScreen } from "./src/screens/HomeScreen";
 import { PayEnterScreen } from "./src/screens/PayEnterScreen";
 import { PayReviewScreen } from "./src/screens/PayReviewScreen";
 import { PaySuccessScreen } from "./src/screens/PaySuccessScreen";
+import { ScanScreen } from "./src/screens/ScanScreen";
 import { HistoryListScreen } from "./src/screens/HistoryScreen";
 import { TxDetailScreen } from "./src/screens/TxDetailScreen";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
@@ -30,6 +31,7 @@ const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
 function PayFlowNavigator() {
   return (
     <PayStack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.color.bg } }}>
+      <PayStack.Screen name="Scan" component={ScanScreen} />
       <PayStack.Screen name="PayEnter" component={PayEnterScreen} />
       <PayStack.Screen name="PayReview" component={PayReviewScreen} />
       <PayStack.Screen name="PaySuccess" component={PaySuccessScreen} />
@@ -92,6 +94,8 @@ export default function App() {
         } else {
           navRef.current.navigate("PayFlow", { screen: "PayEnter" });
         }
+        // Note: launched-from-camera deeplinks bypass the Scan screen; the
+        // user can still reach it via Home -> Pay.
       } catch {
         // Bad deeplink; ignore.
       }

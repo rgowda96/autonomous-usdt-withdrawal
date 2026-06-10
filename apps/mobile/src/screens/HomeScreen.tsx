@@ -36,7 +36,7 @@ export function HomeScreen() {
       <Text style={s.totalAmount}>₹{total.toLocaleString("en-IN")}</Text>
 
       <View style={s.payRow}>
-        <Button label="Pay" onPress={() => nav.navigate("PayFlow", { screen: "PayEnter" })} style={s.payBtn} />
+        <Button label="Pay" onPress={() => nav.navigate("PayFlow", { screen: "Scan" })} style={s.payBtn} />
       </View>
 
       <Text style={s.section}>Your assets</Text>

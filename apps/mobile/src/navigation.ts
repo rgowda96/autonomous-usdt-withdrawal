@@ -2,6 +2,7 @@ import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { QuoteResponse, SettleResponse } from "./api";
 
 export type PayFlowParamList = {
+  Scan: undefined;
   PayEnter: undefined;
   PayReview: { vpa: string; amountInr: number };
   PaySuccess: { vpa: string; amountInr: number; quote: QuoteResponse; tx: SettleResponse };

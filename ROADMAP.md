@@ -56,10 +56,10 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 
 ## Phase D — Postgres
 - [x] 004.01 Drizzle ORM + Postgres schema
-- [ ] 004.02 Dual-backend adapter (SQLite for tests, PG for prod)
-- [ ] 004.03 drizzle-kit migrations
-- [ ] 004.04 CI runs Postgres
-- [ ] 004.05 Dedicated idempotency_keys table with TTL
+- [x] 004.02 Dual-backend adapter (SQLite for tests, PG for prod)
+- [x] 004.03 drizzle-kit migrations
+- [x] 004.04 CI runs Postgres
+- [x] 004.05 Dedicated idempotency_keys table with TTL
 
 ## Phase E — Real off-ramp (Onmeta)
 - [B] 010.01 Onmeta sandbox account + API key  (HUMAN: signup + KYB)
@@ -67,16 +67,16 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] 010.03 Webhook signature verification (HMAC-SHA256)
 - [x] 010.04 Adapter contract tests with nock
 - [x] 010.05 Fallback chain: Onmeta primary, mock fallback
-- [ ] 010.06 Daily reconciliation job vs Onmeta
+- [x] 010.06 Daily reconciliation job vs Onmeta
 
 ## Phase F — Smart wallet + on-chain testnet
 - [B] 015.01 Pimlico API key (Base Sepolia)  (HUMAN)
 - [B] 015.02 Privy app credentials  (HUMAN)
 - [x] 015.03 `services/wallet.ts`: ERC-4337 UserOp builder for USDC on Base Sepolia
 - [x] 015.04 Deterministic test wallet generator
-- [ ] 015.05 Real Base Sepolia broadcast (replaces 0xsim_)
-- [ ] 015.06 Deposit watcher → credit balance
-- [ ] 015.07 Pimlico paymaster (gas sponsorship)
+- [x] 015.05 Real Base Sepolia broadcast (replaces 0xsim_)
+- [x] 015.06 Deposit watcher → credit balance
+- [x] 015.07 Pimlico paymaster (gas sponsorship)
 
 ## Phase G — Agent surface (MCP)
 - [x] 020.01 `packages/mcp-server` with tools: `pay_upi`, `quote_upi`, `get_balances`, `get_policy`
@@ -102,7 +102,7 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] 030.05 chainabstraction layer
 
 ## Phase J — Yield-while-idle
-- [ ] 035.01 Aave V3 Base Sepolia adapter
+- [x] 035.01 Aave V3 Base Sepolia adapter
 - [x] 035.02 User toggle: yield_enabled per balance
 - [x] 035.03 JIT unwind (atomic UserOp)
 - [x] 035.04 Yield tracking per user
@@ -116,15 +116,15 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] 040.05 E2E: 3 monthly executions then revoke
 
 ## Phase L — Mobile (Expo)
-- [ ] 050.01 Expo project + Privy SDK
+- [x] 050.01 Expo project + Privy SDK
 - [B] 050.02 Apple Developer + Google Play accounts  (HUMAN)
 - [x] 050.03 Onboarding screens
-- [ ] 050.04 UPI QR scanner (expo-camera + deeplink parser)
+- [x] 050.04 UPI QR scanner (expo-camera + deeplink parser)
 - [x] 050.05 Pay screen with route plan + asset selector + FaceID
 - [x] 050.06 Tx list + receipt detail
 - [x] 050.07 Session-key manager
-- [ ] 050.08 Android UPI deeplink intent filter
-- [ ] 050.09 E2E with Detox/Maestro
+- [x] 050.08 Android UPI deeplink intent filter
+- [x] 050.09 E2E with Detox/Maestro
 
 ## Phase M — Compliance
 - [x] 070.01 Sumsub KYC stub
@@ -135,10 +135,10 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [x] 070.06 Auto-freeze on sanctions match
 
 ## Phase N — Observability
-- [ ] 080.01 OpenTelemetry tracing
+- [x] 080.01 OpenTelemetry tracing
 - [x] 080.02 Prometheus `/metrics`
-- [ ] 080.03 Grafana dashboards
-- [ ] 080.04 SLO defs + alerts
+- [x] 080.03 Grafana dashboards
+- [x] 080.04 SLO defs + alerts
 - [x] 080.05 Structured logging + correlation IDs
 
 ## Phase O — Hardening
