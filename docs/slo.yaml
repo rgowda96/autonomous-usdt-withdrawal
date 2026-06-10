@@ -1,0 +1,80 @@
+# StablePay SLOs.
+# Tooling-agnostic spec: each SLO has indicator (PromQL), objective (%), and
+# error-budget window. Compatible with Pyrra and Sloth generators.
+
+slos:
+  - name: quote_availability
+    description: "/v1/quote returns 2xx for >= 99.9% of requests over 30 days"
+    indicator:
+      ratio:
+        good: 'sum(rate(http_requests_total{route="/v1/quote",code=~"2.."}[5m]))'
+        total: 'sum(rate(http_requests_total{route="/v1/quote"}[5m]))'
+    objective: 99.9
+    window: 30d
+    alerting:
+      page_after_minutes_burn: 14  # fast burn
+      ticket_after_hours_burn: 6   # slow burn
+
+  - name: settle_availability
+    description: "/v1/settle returns 2xx for >= 99.95% of requests over 30 days"
+    indicator:
+      ratio:
+        good: 'sum(rate(http_requests_total{route="/v1/settle",code=~"2.."}[5m]))'
+        total: 'sum(rate(http_requests_total{route="/v1/settle"}[5m]))'
+    objective: 99.95
+    window: 30d
+    alerting:
+      page_after_minutes_burn: 14
+      ticket_after_hours_burn: 6
+
+  - name: quote_latency_p99
+    description: "p99 /v1/quote latency <= 250 ms over 5-minute window"
+    indicator:
+      latency:
+        bucket_metric: 'http_request_duration_ms_bucket{route="/v1/quote"}'
+        threshold_ms: 250
+    objective: 99
+    window: 28d
+
+  - name: settle_latency_p99
+    description: "p99 /v1/settle latency <= 15 s (end-to-end including off-ramp)"
+    indicator:
+      latency:
+        bucket_metric: 'http_request_duration_ms_bucket{route="/v1/settle"}'
+        threshold_ms: 15000
+    objective: 99
+    window: 28d
+
+  - name: agent_authorization_rate
+    description: "Agent payment rejections (POLICY_DENIED) below 5% of all /v1/agent/pay-upi calls"
+    indicator:
+      ratio:
+        good: 'sum(rate(http_requests_total{route="/v1/agent/pay-upi",code=~"2.."}[10m]))'
+        total: 'sum(rate(http_requests_total{route="/v1/agent/pay-upi"}[10m]))'
+    objective: 95
+    window: 7d
+
+alerts:
+  - name: settle_p99_high
+    when: 'histogram_quantile(0.99, sum(rate(http_request_duration_ms_bucket{route="/v1/settle"}[5m])) by (le)) > 15000'
+    for: 5m
+    severity: page
+    runbook: docs/runbook.md#stablepay_settle_p99--15s-5min
+
+  - name: agent_reject_rate_high
+    when: '100 * sum(rate(http_requests_total{route="/v1/agent/pay-upi",code=~"4.."}[10m])) / sum(rate(http_requests_total{route="/v1/agent/pay-upi"}[10m])) > 5'
+    for: 10m
+    severity: ticket
+    runbook: docs/runbook.md#stablepay_agent_reject_rate--5
+
+  - name: freeze_rate_high
+    when: 'increase(stablepay_freeze_total[1h]) / sum(increase(http_requests_total[1h])) > 0.001'
+    for: 30m
+    severity: page
+    runbook: docs/runbook.md#stablepay_freeze_rate--01
+
+  - name: recon_sweeper_orphans_high
+    when: 'recon_sweeper_orphans > 5'
+    for: 5m
+    severity: page
+    runbook: docs/runbook.md#recon_sweeper_orphans--5
