@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node --import tsx/esm src/server.ts",
-    "build": "tsc -p .",
+    "build": "tsc -p . && mkdir -p dist/public && cp src/public/index.html dist/public/index.html",
     "test": "node --import tsx/esm --test test/*.test.ts",
     "migrate": "tsx src/db/migrate.ts",
     "seed": "tsx src/db/seed.ts"
