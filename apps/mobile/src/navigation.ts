@@ -16,5 +16,6 @@ export type RootTabsParamList = {
   Home: undefined;
   PayFlow: NavigatorScreenParams<PayFlowParamList>;
   History: NavigatorScreenParams<HistoryStackParamList>;
+  Agents: undefined;
   Settings: undefined;
 };
