@@ -22,6 +22,7 @@ export const AssetPreferenceSchema = z.union([
   z.literal("hodl_mode"),
   z.object({ asset: AssetSchema, chain: ChainSchema }),
 ]);
+// already includes auto_tax_optimal — fully wired in routing.ts
 export type AssetPreference = z.infer<typeof AssetPreferenceSchema>;
 
 export const QuoteRequestSchema = z.object({
