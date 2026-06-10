@@ -197,6 +197,18 @@ CREATE TABLE IF NOT EXISTS realized_gains (
 
 CREATE INDEX IF NOT EXISTS idx_gains_user ON realized_gains(user_id, realized_at);
 
+CREATE TABLE IF NOT EXISTS idempotency_keys (
+  key TEXT PRIMARY KEY,
+  scope TEXT NOT NULL,                 -- "quote" | "settle" | "intent"
+  ref_id TEXT NOT NULL,                -- quote_id / transaction_id / intent_id
+  user_id TEXT,
+  response_blob TEXT,                  -- cached response JSON
+  created_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_idem_scope_exp ON idempotency_keys(scope, expires_at);
+
 CREATE TABLE IF NOT EXISTS beta_invites (
   code TEXT PRIMARY KEY,
   invited_by TEXT,
