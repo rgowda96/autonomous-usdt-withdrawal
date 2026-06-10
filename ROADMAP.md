@@ -20,21 +20,21 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 - [ ] A.mobile.3 Real QR camera scanner via `expo-camera`; parse `upi://pay?pa=...` deeplinks
 - [x] A.mobile.4 Pull-to-refresh + transaction detail screen with full timeline
 - [x] A.mobile.5 Asset picker: override `auto_cheapest` and pick a specific holding
-- [ ] A.mobile.6 Empty-state + onboarding screens
-- [ ] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
+- [x] A.mobile.6 Empty-state + onboarding screens
+- [x] A.mobile.7 Inline TDS + capital-gain warnings (India compliance UX)
 - [x] A.mobile.8 Settings: API base URL switcher (laptop vs deployed backend)
 - [x] A.mobile.9 Recent payees autocomplete
 - [ ] A.mobile.10 Android UPI deeplink intent filter (requires EAS Build, not Expo Go)
-- [ ] A.01.fix Followups from code-review on A.01 (web demo): copy `src/public/*` to `dist/`, extract shared `seedDemoUser(conn)`, replace innerHTML in tx list, use `crypto.randomUUID()`, upgrade `test/demo_page.test.ts` to boot fastify + GET /.
-- [ ] A.02 Pre-seed demo user on first server boot so the demo page just works
-- [ ] A.03 Add a "Recent transactions" list panel on the demo page
-- [ ] A.04 Add visual loading + error states (failure modes look like the real product)
-- [ ] A.05 Add a fee-breakdown widget that explains why each rupee was charged
-- [ ] A.06 Add an "Asset selector" toggle (USDC vs USDT vs INR_CREDIT) and show how the quote changes
-- [ ] A.07 Add a "Simulate off-ramp success" button so the full lifecycle ends in SETTLED inside the demo
-- [ ] A.08 Make the demo page mobile-responsive (test in DevTools mobile view)
-- [ ] A.09 Add a "Spending policy" UI: set a daily cap and a merchant allowlist (stores config server-side)
-- [ ] A.10 Add an "Agent mode" toggle: simulates an LLM agent making a payment under the policy
+- [x] A.01.fix Followups from code-review on A.01 (web demo): copy `src/public/*` to `dist/`, extract shared `seedDemoUser(conn)`, replace innerHTML in tx list, use `crypto.randomUUID()`, upgrade `test/demo_page.test.ts` to boot fastify + GET /.
+- [x] A.02 Pre-seed demo user on first server boot so the demo page just works
+- [x] A.03 Add a "Recent transactions" list panel on the demo page
+- [x] A.04 Add visual loading + error states (failure modes look like the real product)
+- [x] A.05 Add a fee-breakdown widget that explains why each rupee was charged
+- [x] A.06 Add an "Asset selector" toggle (USDC vs USDT vs INR_CREDIT) and show how the quote changes
+- [x] A.07 Add a "Simulate off-ramp success" button so the full lifecycle ends in SETTLED inside the demo
+- [x] A.08 Make the demo page mobile-responsive (test in DevTools mobile view)
+- [x] A.09 Add a "Spending policy" UI: set a daily cap and a merchant allowlist (stores config server-side)
+- [x] A.10 Add an "Agent mode" toggle: simulates an LLM agent making a payment under the policy
 
 ## Phase B — Hardening the core
 - [x] 002.02 Add `GET /v1/transactions/:id` endpoint + full event timeline + test
@@ -47,15 +47,15 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 
 ## Phase C — Routing engine v2
 - [x] 003.01 Replace hard-coded rates with CoinGecko fetcher + 30s cache + test
-- [ ] 003.02 Add Binance P2P spread feed; fallback to CG
+- [x] 003.02 Add Binance P2P spread feed; fallback to CG
 - [x] 003.03 Quote response surfaces per-step cost breakdown
-- [ ] 003.04 `auto_tax_optimal` mode: prefer assets with unrealized losses
+- [x] 003.04 `auto_tax_optimal` mode: prefer assets with unrealized losses
 - [x] 003.05 Cost-basis ledger (FIFO)
 - [x] 003.06 Surface tax preview in quote
-- [ ] 003.07 Per-venue slippage simulation (1inch, Jupiter)
+- [x] 003.07 Per-venue slippage simulation (1inch, Jupiter)
 
 ## Phase D — Postgres
-- [ ] 004.01 Drizzle ORM + Postgres schema
+- [x] 004.01 Drizzle ORM + Postgres schema
 - [ ] 004.02 Dual-backend adapter (SQLite for tests, PG for prod)
 - [ ] 004.03 drizzle-kit migrations
 - [ ] 004.04 CI runs Postgres
@@ -118,11 +118,11 @@ Per MISSION.md, this is a mobile-first product. The web demo is dev-only.
 ## Phase L — Mobile (Expo)
 - [ ] 050.01 Expo project + Privy SDK
 - [B] 050.02 Apple Developer + Google Play accounts  (HUMAN)
-- [ ] 050.03 Onboarding screens
+- [x] 050.03 Onboarding screens
 - [ ] 050.04 UPI QR scanner (expo-camera + deeplink parser)
-- [ ] 050.05 Pay screen with route plan + asset selector + FaceID
-- [ ] 050.06 Tx list + receipt detail
-- [ ] 050.07 Session-key manager
+- [x] 050.05 Pay screen with route plan + asset selector + FaceID
+- [x] 050.06 Tx list + receipt detail
+- [x] 050.07 Session-key manager
 - [ ] 050.08 Android UPI deeplink intent filter
 - [ ] 050.09 E2E with Detox/Maestro
 
