@@ -3,6 +3,7 @@ import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "../config.js";
+import { assertSupportedBackend } from "./backend.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -10,6 +11,7 @@ let _db: Database.Database | null = null;
 
 export function db(): Database.Database {
   if (_db) return _db;
+  assertSupportedBackend();
   const path = resolve(process.cwd(), config.DATABASE_URL);
   mkdirSync(dirname(path), { recursive: true });
   _db = new Database(path);
