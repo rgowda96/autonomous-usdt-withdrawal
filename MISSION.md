@@ -14,6 +14,25 @@ partner) at ~1%. The product is **mobile-first** (Expo / React Native today, EAS
 later) — a card is not the primary product and exists only as a fallback for foreign
 travel / ATM in v0.5+.
 
+The full competitive teardown — every RedotPay flaw and the StablePay mechanism that
+fixes it — lives in `REDOTPAY_FLAWS.md`. The product design that makes the win legible
+lives in `DESIGN.md`. Both are load-bearing: Mission Guardian checks PRs against them.
+
+### The FX transparency promise (the core wedge)
+
+RedotPay's single most painful flaw: when a user spends a USD-denominated stablecoin
+online, RedotPay effectively bills **~₹84 per $1 when mid-market is ~₹95** — an opaque
+~11.5% haircut buried across "conversion", "FX markup", and cross-border interchange.
+
+StablePay's commitment, enforced in code (`src/services/fx.ts`):
+- Bill USD purchases at **live mid-market FX minus exactly ONE disclosed spread**
+  (default 60 bps, `ONLINE_SPREAD_BPS`).
+- **Always show the receipt**: mid-market rate, the user's effective rate, the fee in
+  rupees, and the RedotPay-equivalent cost — so the user sees `you_save_inr` on every
+  purchase and a lifetime total on Home.
+- The RedotPay comparison basis (`REDOTPAY_EFFECTIVE_HAIRCUT_BPS`, default 1150) must
+  stay defensible from public fee schedules. Never inflate it.
+
 ## India compliance (non-negotiable — every PR is checked against this)
 
 1. **VASP-registered with FIU-IND** before going live to any non-founder user.
@@ -56,6 +75,10 @@ A pull request is **rejected by Mission Guardian** if it:
 - Removes the TDS accrual step from any settlement.
 - Locks the user to a single off-ramp partner with no fallback.
 - Hides fees from the user. (Every receipt must show: rate, fee bps, TDS, net.)
+- Bills a USD purchase at worse than mid-market minus the single disclosed spread.
+- Removes or weakens the RedotPay savings comparison shown to the user.
+- Inflates `REDOTPAY_EFFECTIVE_HAIRCUT_BPS` beyond what public fee schedules support.
+- Ships UI that violates `DESIGN.md` (e.g. uses the savings emerald for a non-value-positive element, or adds a competing accent colour).
 
 ## Mission status (current)
 
