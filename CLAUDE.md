@@ -123,6 +123,16 @@ Rules for using agents:
 - Existing structure: `src/services/`, `src/routes/`, `src/types.ts`.
 - One task = one PR = one squash merge.
 
+## Design discipline (any UI-touching task)
+
+- `DESIGN.md` is the source of truth for the mobile design system. Read it before
+  changing any screen or component. Use design tokens from `apps/mobile/src/theme.ts`
+  — never hard-code colours, spacing, or radii.
+- The savings emerald (`color.savings`) is for value-positive moments ONLY (money in the
+  user's favour). One brand action colour. Show the receipt, never hide a fee.
+- Competitive intent is documented in `REDOTPAY_FLAWS.md`. Any change to a flow that
+  fixes a RedotPay flaw must keep that row ✅; if it regresses, flip the row and block.
+
 ## Done state
 
 When ROADMAP.md has zero `[ ]` items (only `[x]` and `[B]`), write final summary in STATE.md and stop.
