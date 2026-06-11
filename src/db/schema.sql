@@ -19,6 +19,32 @@ CREATE TABLE IF NOT EXISTS balances (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- Online / USD-merchant purchases (Amazon US, AWS, OpenAI, Steam, etc.).
+-- The RedotPay-killer flow: USDC billed at near mid-market, not ~84 INR/USD.
+CREATE TABLE IF NOT EXISTS online_purchases (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  idempotency_key TEXT NOT NULL UNIQUE,
+  merchant TEXT NOT NULL,             -- display name e.g. "Amazon US"
+  merchant_country TEXT,              -- ISO-2, e.g. "US"
+  usd_amount TEXT NOT NULL,           -- decimal string
+  mid_market_inr_per_usd TEXT NOT NULL,
+  our_inr_per_usd TEXT NOT NULL,
+  our_inr_total INTEGER NOT NULL,
+  our_fee_inr INTEGER NOT NULL,
+  redotpay_inr_total INTEGER NOT NULL,
+  saved_inr INTEGER NOT NULL,
+  usdc_debited TEXT NOT NULL,         -- USDC units pulled from balance
+  status TEXT NOT NULL,               -- AUTHORIZED, CAPTURED, SETTLED, DECLINED, REFUNDED
+  network_ref TEXT,                   -- card/network auth id
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_online_user ON online_purchases(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_online_status ON online_purchases(status);
+
 CREATE TABLE IF NOT EXISTS quotes (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
