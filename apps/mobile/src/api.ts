@@ -141,6 +141,55 @@ export const api = {
     request<SessionKey & { token: string }>("POST", `/v1/users/${DEMO_USER_ID}/session-keys`, body),
   revokeSessionKey: (id: string) =>
     request<{ ok: boolean }>("DELETE", `/v1/users/${DEMO_USER_ID}/session-keys/${id}`),
+  onlineQuote: (usd_amount: number) =>
+    request<OnlineQuote>("POST", "/v1/online/quote", { usd_amount }),
+  onlineCharge: (merchant: string, usd_amount: number, merchant_country?: string) =>
+    request<OnlineChargeResult>("POST", "/v1/online/charge", {
+      idempotency_key: uuid(),
+      user_id: DEMO_USER_ID,
+      merchant,
+      merchant_country,
+      usd_amount,
+    }),
+  onlinePurchases: () =>
+    request<{ user_id: string; purchases: OnlinePurchase[] }>("GET", `/v1/users/${DEMO_USER_ID}/online-purchases`),
+  savings: () =>
+    request<{ user_id: string; lifetime_saved_inr: number; purchase_count: number }>("GET", `/v1/users/${DEMO_USER_ID}/savings`),
+};
+
+export type OnlineQuote = {
+  usd_amount: number;
+  mid_market_inr_per_usd: number;
+  our_inr_per_usd: number;
+  our_spread_bps: number;
+  our_inr_total: number;
+  our_fee_inr: number;
+  redotpay_inr_per_usd: number;
+  redotpay_inr_total: number;
+  you_save_inr: number;
+  you_save_pct: number;
+  usdc_required: string;
+  tds_inr: number;
+};
+
+export type OnlineChargeResult = {
+  id: string;
+  status: string;
+  usd_amount: number;
+  our_inr_total: number;
+  saved_inr: number;
+  network_ref: string;
+};
+
+export type OnlinePurchase = {
+  id: string;
+  merchant: string;
+  merchant_country: string | null;
+  usd_amount: string;
+  our_inr_total: number;
+  saved_inr: number;
+  status: string;
+  created_at: number;
 };
 
 export type SessionKey = {

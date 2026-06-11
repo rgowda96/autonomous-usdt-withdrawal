@@ -4,6 +4,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Button } from "../components/Button";
 import { Pill } from "../components/Pill";
+import { SavingsHero } from "../components/SavingsHero";
+import { GradientCard } from "../components/GradientCard";
 import { balanceInr, totalInr, useBalances, useTransactions } from "../state";
 import { theme } from "../theme";
 import type { RootTabsParamList } from "../navigation";
@@ -32,12 +34,20 @@ export function HomeScreen() {
       refreshControl={<RefreshControl tintColor={theme.color.textDim} refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <Text style={s.greeting}>Hi 👋</Text>
-      <Text style={s.totalLabel}>Total balance</Text>
-      <Text style={s.totalAmount}>₹{total.toLocaleString("en-IN")}</Text>
 
-      <View style={s.payRow}>
-        <Button label="Pay" onPress={() => nav.navigate("PayFlow", { screen: "Scan" })} style={s.payBtn} />
-      </View>
+      <GradientCard
+        colors={[theme.color.gradHeroStart, theme.color.gradHeroEnd]}
+        style={{ marginBottom: theme.space.lg }}
+      >
+        <Text style={s.totalLabel}>Total balance</Text>
+        <Text style={s.totalAmount}>₹{total.toLocaleString("en-IN")}</Text>
+        <View style={s.payRow}>
+          <Button label="Pay UPI" onPress={() => nav.navigate("PayFlow", { screen: "Scan" })} style={{ flex: 1 }} />
+          <Button label="Shop USD" variant="secondary" onPress={() => nav.navigate("Online")} style={{ flex: 1, marginLeft: theme.space.sm }} />
+        </View>
+      </GradientCard>
+
+      <SavingsHero />
 
       <Text style={s.section}>Your assets</Text>
       <View>
@@ -88,10 +98,10 @@ export function HomeScreen() {
 const s = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: theme.color.bg },
   content: { padding: theme.space.lg, paddingBottom: theme.space.xxl },
-  greeting: { color: theme.color.textDim, fontSize: theme.font.body, marginBottom: theme.space.xs },
-  totalLabel: { color: theme.color.textDim, fontSize: theme.font.small, marginTop: theme.space.lg },
-  totalAmount: { color: theme.color.text, fontSize: 40, fontWeight: "700", marginBottom: theme.space.lg },
-  payRow: { marginBottom: theme.space.xl },
+  greeting: { color: theme.color.textDim, fontSize: theme.font.body, marginBottom: theme.space.md, fontWeight: theme.weight.medium },
+  totalLabel: { color: theme.color.textDim, fontSize: theme.font.small, fontWeight: theme.weight.medium },
+  totalAmount: { color: theme.color.text, fontSize: theme.font.display, fontWeight: theme.weight.heavy, letterSpacing: theme.track.tight, marginTop: 2, marginBottom: theme.space.lg },
+  payRow: { flexDirection: "row" },
   payBtn: { width: "100%" },
   section: { color: theme.color.textDim, fontSize: theme.font.tiny, textTransform: "uppercase", letterSpacing: 0.8, marginTop: theme.space.lg, marginBottom: theme.space.md, fontWeight: "700" },
   empty: { color: theme.color.textFaint, fontStyle: "italic", fontSize: theme.font.small },

@@ -17,6 +17,7 @@ import { PayEnterScreen } from "./src/screens/PayEnterScreen";
 import { PayReviewScreen } from "./src/screens/PayReviewScreen";
 import { PaySuccessScreen } from "./src/screens/PaySuccessScreen";
 import { ScanScreen } from "./src/screens/ScanScreen";
+import { OnlineScreen } from "./src/screens/OnlineScreen";
 import { HistoryListScreen } from "./src/screens/HistoryScreen";
 import { TxDetailScreen } from "./src/screens/TxDetailScreen";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
@@ -144,6 +145,11 @@ export default function App() {
               name="PayFlow"
               component={PayFlowNavigator}
               options={{ title: "Pay", tabBarIcon: ({ focused }) => <TabIcon label="💸" focused={focused} /> }}
+            />
+            <Tabs.Screen
+              name="Online"
+              component={OnlineScreen}
+              options={{ title: "Shop", tabBarIcon: ({ focused }) => <TabIcon label="🛍️" focused={focused} /> }}
             />
             <Tabs.Screen
               name="History"
