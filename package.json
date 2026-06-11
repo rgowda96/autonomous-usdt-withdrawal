@@ -1,0 +1,29 @@
+{
+  "name": "stable-pay",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Universal USDC/USDT spend rail for India — QR, online, agent, P2P",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node --import tsx/esm src/server.ts",
+    "build": "tsc -p . && mkdir -p dist/public && cp src/public/index.html dist/public/index.html",
+    "test": "node --import tsx/esm --test test/*.test.ts",
+    "migrate": "tsx src/db/migrate.ts",
+    "seed": "tsx src/db/seed.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.1.0",
+    "better-sqlite3": "^11.3.0",
+    "drizzle-orm": "^0.36.0",
+    "fastify": "^5.0.0",
+    "pino-pretty": "^11.2.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

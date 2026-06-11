@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "StablePay",
+    "slug": "stablepay",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "scheme": "stablepay",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "io.stablepay.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["upi"],
+        "CFBundleURLTypes": [
+          { "CFBundleURLSchemes": ["upi", "stablepay"] }
+        ],
+        "NSCameraUsageDescription": "StablePay needs the camera to scan UPI QR codes."
+      }
+    },
+    "android": {
+      "package": "io.stablepay.app",
+      "adaptiveIcon": { "backgroundColor": "#0b0d12" },
+      "permissions": ["android.permission.CAMERA"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [{ "scheme": "upi", "host": "pay" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "data": [{ "scheme": "stablepay" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "plugins": [
+      ["expo-camera", { "cameraPermission": "StablePay needs the camera to scan UPI QR codes." }]
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "extra": {
+      "apiBaseUrl": "http://localhost:3000"
+    }
+  }
+}

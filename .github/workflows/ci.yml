@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npm test
+
+  test-postgres:
+    runs-on: ubuntu-latest
+    continue-on-error: true   # Postgres adapter not yet wired (004.02-05)
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: stablepay
+          POSTGRES_PASSWORD: stablepay
+          POSTGRES_DB: stablepay
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U stablepay"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - name: Postgres smoke test
+        env:
+          DATABASE_URL: postgres://stablepay:stablepay@localhost:5432/stablepay
+        run: |
+          # Phase D follow-up: this should run `npm test` against Postgres.
+          # For now we just assert the backend selector trips the helpful
+          # error message rather than silently running on the wrong driver.
+          set +e
+          OUT=$(node --import tsx/esm -e "import('./src/db/index.ts').then(m => m.db()); " 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q "Phase D follow-ups" && echo "OK: selector detected pg URL"
